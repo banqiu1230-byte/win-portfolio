@@ -380,6 +380,27 @@ function runViewTransition(update, type = "page") {
   return finish(document.startViewTransition(() => flushSync(update)).finished.catch(() => {}));
 }
 
+function prepareDetailClose(projectId) {
+  const layer = document.querySelector(".detail-layer");
+  const deep = layer && layer.scrollTop > Math.max(520, window.innerHeight * 0.65);
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const hero = layer?.querySelector(".detail-hero");
+
+  if (!deep || reduceMotion || typeof document.startViewTransition !== "function" || !hero) return null;
+
+  hero.style.viewTransitionName = "none";
+  const snapshot = hero.cloneNode(true);
+  snapshot.classList.add("detail-close-snapshot");
+  snapshot.style.viewTransitionName = `project-cover-${projectId}`;
+  document.body.append(snapshot);
+  requestAnimationFrame(() => snapshot.classList.add("is-visible"));
+
+  return {
+    node: snapshot,
+    ready: new Promise((resolve) => window.setTimeout(resolve, 150)),
+  };
+}
+
 function ArrowIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>;
 }
@@ -715,13 +736,16 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    const onPopState = () => {
+    const onPopState = async () => {
       const id = window.location.hash.match(/^#project\/(.+)$/)?.[1];
       const nextId = projects.some((p) => p.id === id) ? id : null;
       if (nextId && !activeId) scrollPosition.current = window.scrollY;
       const transitionId = activeId || nextId;
+      const closeSnapshot = !nextId && activeId ? prepareDetailClose(activeId) : null;
+      if (closeSnapshot) await closeSnapshot.ready;
       if (transitionId) flushSync(() => setTransitioningId(transitionId));
       runViewTransition(() => {
+        closeSnapshot?.node.remove();
         setActiveId(nextId);
       }, nextId ? "detail-open" : "detail-close").finally(() => setTransitioningId(null));
     };
@@ -769,13 +793,16 @@ export function App() {
     }, "detail-open").finally(() => setTransitioningId(null));
   }
 
-  function closeProject() {
+  async function closeProject() {
     const closingId = activeId;
+    const closeSnapshot = prepareDetailClose(closingId);
+    if (closeSnapshot) await closeSnapshot.ready;
     flushSync(() => setTransitioningId(closingId));
     if (window.location.hash.startsWith("#project/")) {
       window.history.replaceState({}, "", window.location.pathname + window.location.search);
     }
     runViewTransition(() => {
+      closeSnapshot?.node.remove();
       setActiveId(null);
     }, "detail-close").finally(() => setTransitioningId(null));
   }
