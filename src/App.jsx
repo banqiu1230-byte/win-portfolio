@@ -382,22 +382,20 @@ function runViewTransition(update, type = "page") {
 
 function prepareDetailClose(projectId) {
   const layer = document.querySelector(".detail-layer");
-  const deep = layer && layer.scrollTop > Math.max(520, window.innerHeight * 0.65);
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const hero = layer?.querySelector(".detail-hero");
 
-  if (!deep || reduceMotion || typeof document.startViewTransition !== "function" || !hero) return null;
+  if (reduceMotion || typeof document.startViewTransition !== "function" || !hero) return null;
 
   hero.style.viewTransitionName = "none";
   const snapshot = hero.cloneNode(true);
   snapshot.classList.add("detail-close-snapshot");
   snapshot.style.viewTransitionName = `project-cover-${projectId}`;
   document.body.append(snapshot);
-  requestAnimationFrame(() => snapshot.classList.add("is-visible"));
 
   return {
     node: snapshot,
-    ready: new Promise((resolve) => window.setTimeout(resolve, 150)),
+    ready: new Promise((resolve) => requestAnimationFrame(resolve)),
   };
 }
 
