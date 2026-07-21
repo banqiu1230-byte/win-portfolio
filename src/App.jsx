@@ -141,7 +141,7 @@ const projects = [
     label: "增长与社交互动",
     period: "2019 — 2022",
     cover: "/assets/cover-redpacket-growth.png",
-    size: "standard",
+    size: "wide",
     tone: "red",
     intro: "从认知建立到互动增长、内容消费与交易转化，持续推动红包场景演进。",
     summary: "红包的价值不只是发钱，而是把利益刺激转化为互动、内容消费与交易机会。项目随业务阶段持续演进，从建立红包认知，到承接情绪表达、连续对话与 GMV 转化。",
@@ -214,7 +214,7 @@ const projects = [
     label: "信息架构",
     period: "2024 — 2025",
     cover: "/assets/cover-message-system.png",
-    size: "wide",
+    size: "standard",
     tone: "violet",
     intro: "通过角色分层与优先级重排，提升普通用户与创作者的消息获取效率。",
     summary: "消息页同时承载普通用户、创作者和平台通知。项目通过数据判断高价值入口，再以角色识别、任务分层和状态规范重组页面，让用户更快到达当前最重要的信息。",
@@ -324,7 +324,7 @@ const projects = [
     title: "多多 Emoji 与视觉作品",
     label: "情绪表达与视觉设计",
     period: "上线 5 年+",
-    cover: "/assets/images/多多emoji.png",
+    cover: "/assets/images/多多emoji.webp",
     size: "standard",
     tone: "yellow",
     intro: "一套跨越评论、聊天、评价和内部沟通场景的情绪表达资产。",
@@ -337,21 +337,21 @@ const projects = [
         eyebrow: "Emoji 资产",
         title: "让表情保持统一角色感，也拥有足够的情绪跨度。",
         body: "整套资产覆盖开心、疑惑、喜爱、惊讶、墨镜、哭、怒、坏笑、点赞、握手、爱心、红包等情绪与动作，让用户用更低成本表达语气和态度。",
-        image: "/assets/images/多多emoji.png",
+        image: "/assets/images/多多emoji.webp",
       },
       {
         eyebrow: "实际应用",
         title: "同一套情绪语言，在不同产品关系中持续复用。",
         body: "Emoji 已应用于商家聊天、拼小圈互动、好友聊天、商品评价体系、多多视频、行家社区和拼多多内部工作沟通软件。",
         points: ["拼小圈评论", "短视频互动", "评价与行家精选", "商家与好友聊天", "内部工作沟通"],
-        image: "/assets/images/其他.png",
+        image: "/assets/images/其他.webp",
       },
       {
         eyebrow: "视觉延伸",
         title: "从活动视觉到工作日图标和系列插画。",
         body: "作品还包含春节摇骰子拉新活动、工作日生活图标和“一周有八天”系列插画，体现不同场景下的视觉叙事与风格控制。",
         points: ["春节摇骰子：把线下好友互动与拉新奖励结合", "Icon 设计：围绕睡觉、闹钟、早餐、骑车、上班与下班等工作日场景", "系列插画：用统一构图表达一周八天的设计日常"],
-        image: "/assets/images/其他.png",
+        image: "/assets/images/其他.webp",
       },
     ],
   },
@@ -504,10 +504,16 @@ function ContactModal({ onClose }) {
 function ProjectCover({ projectId }) {
   const covers = {
     temu: (
-      <>
-        <div className="cover-sheet cover-sheet-back"><img src="/assets/temu-system-overview.png" alt="" /></div>
-        <div className="cover-sheet cover-sheet-main cover-crop-temu"><img src="/assets/temu-page-before-after.png" alt="" /></div>
-      </>
+      <video
+        className="cover-temu-video"
+        src="/assets/videos/temu-aftersales.mp4?v=7"
+        poster="/assets/cover-temu-aftersales.png"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+      />
     ),
     system: (
       <>
@@ -517,10 +523,16 @@ function ProjectCover({ projectId }) {
       </>
     ),
     redpacket: (
-      <>
-        <div className="cover-sheet cover-red-stage"><img src="/assets/pinxiaoquan-growth.png" alt="" /></div>
-        <div className="cover-sheet cover-red-detail"><img src="/assets/redpacket-result.jpg" alt="" /></div>
-      </>
+      <video
+        className="cover-redpacket-video"
+        src="/assets/videos/redpacket.mp4"
+        poster="/assets/cover-redpacket-growth.png"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+      />
     ),
     message: (
       <>
@@ -537,11 +549,16 @@ function ProjectCover({ projectId }) {
       </>
     ),
     emoji: (
-      <>
-        <div className="cover-emoji-crowd"><img src="/assets/images/多多emoji.png" alt="" /></div>
-        <div className="cover-emoji-orbit cover-emoji-orbit-a" />
-        <div className="cover-emoji-orbit cover-emoji-orbit-b" />
-      </>
+      <video
+        className="cover-emoji-video"
+        src="/assets/videos/emoji.mp4"
+        poster="/assets/images/多多emoji.webp"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+      />
     ),
   };
 
@@ -852,7 +869,7 @@ export function App() {
   return (
     <>
       <header className="site-header">
-        <a className="mark" href="#top" aria-label="WIN 首页">W.</a>
+        <a className="mark" href="#top" aria-label="WIN 首页">WIN</a>
         <nav className="filter-nav" aria-label="作品筛选">
           {filters.map(([value, label]) => (
             <button
@@ -890,7 +907,7 @@ export function App() {
               </article>
               <article className="card skill-card reveal-card">
                 <span className="card-kicker">核心能力</span>
-                <div className="skill-cloud"><span>UI 设计</span><span>增长设计</span><span>数据驱动</span><span>复杂流程</span><span>设计系统</span><span>交互设计</span></div>
+                <div className="skill-cloud"><span>UI 设计</span><span>增长设计</span><span>数据驱动</span><span>复杂流程</span><span>设计系统</span><span>交互设计</span><span>Vibe Coding</span><span>AI 辅助设计</span></div>
               </article>
               <button className="card contact-card reveal-card" onClick={() => setContactOpen(true)} aria-label="打开联系方式" data-tooltip="联系我">
                 <span className="contact-symbol"><ContactIcon /></span>
@@ -916,19 +933,19 @@ export function App() {
           {(filter === "all" || filter === "resume") && (
             <>
               <DownloadCard
+                type="resume"
+                title="个人简历"
+                meta="3.1 MB"
+                href="/assets/wen-zhang-resume.pdf"
+                fileName="张文_UIUX_简历.pdf"
+              />
+              <DownloadCard
                 type="portfolio"
                 title="作品集"
                 meta="15 MB"
                 href="/assets/wen-zhang-portfolio.pdf"
                 fileName="张文_UIUX_作品集.pdf"
                 wide
-              />
-              <DownloadCard
-                type="resume"
-                title="个人简历"
-                meta="3.1 MB"
-                href="/assets/wen-zhang-resume.pdf"
-                fileName="张文_UIUX_简历.pdf"
               />
               <article className="card closing-card reveal-card">
                 <span className="card-kicker">持续探索</span>
