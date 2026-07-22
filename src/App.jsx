@@ -504,49 +504,116 @@ function ContactModal({ onClose }) {
 }
 
 function VideoCover({ src, poster, className }) {
+  const containerRef = useRef(null);
   const videoRef = useRef(null);
   const [posterReady, setPosterReady] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [playing, setPlaying] = useState(false);
+
+  const handlePlaying = () => {
+    const currentVideo = videoRef.current;
+    const videos = [...document.querySelectorAll("video")];
+    const visibleArea = (video) => {
+      const rect = video.getBoundingClientRect();
+      const width = Math.max(0, Math.min(rect.right, innerWidth) - Math.max(rect.left, 0));
+      const height = Math.max(0, Math.min(rect.bottom, innerHeight) - Math.max(rect.top, 0));
+      return width * height;
+    };
+    const activeVideo = videos.reduce((best, video) => (
+      visibleArea(video) > visibleArea(best) ? video : best
+    ), currentVideo);
+
+    if (activeVideo !== currentVideo) {
+      currentVideo.pause();
+      activeVideo.play().catch(() => {});
+      return;
+    }
+
+    videos.forEach((video) => {
+      if (video !== currentVideo) video.pause();
+    });
+    setPlaying(true);
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+
+    if (!("IntersectionObserver" in window)) {
+      setShouldLoad(true);
+      setIsVisible(true);
+      return undefined;
+    }
+
+    const preloadObserver = new IntersectionObserver(([entry]) => {
+      setShouldLoad(entry.isIntersecting);
+    }, { rootMargin: "320px 0px" });
+
+    const playbackObserver = new IntersectionObserver(([entry]) => {
+      setIsVisible(entry.isIntersecting && entry.intersectionRatio >= 0.28);
+    }, { threshold: [0, 0.28, 0.6] });
+
+    preloadObserver.observe(container);
+    playbackObserver.observe(container);
+
+    return () => {
+      preloadObserver.disconnect();
+      playbackObserver.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return undefined;
+    if (!video || !shouldLoad) return undefined;
 
-    setPosterReady(false);
     setPlaying(false);
 
-    const tryPlay = () => {
+    const syncPlayback = () => {
+      if (!isVisible || document.hidden) {
+        video.pause();
+        setPlaying(false);
+        return;
+      }
+
       const playRequest = video.play();
       if (playRequest) playRequest.catch(() => setPlaying(false));
     };
 
-    if (video.readyState >= 2) tryPlay();
-    else video.addEventListener("loadeddata", tryPlay, { once: true });
+    syncPlayback();
+    document.addEventListener("visibilitychange", syncPlayback);
 
-    return () => video.removeEventListener("loadeddata", tryPlay);
-  }, [src]);
+    return () => {
+      document.removeEventListener("visibilitychange", syncPlayback);
+      video.pause();
+    };
+  }, [isVisible, shouldLoad, src]);
 
   return (
-    <div className={`video-cover${posterReady ? " has-poster" : ""}${playing ? " is-playing" : ""}`}>
+    <div ref={containerRef} className={`video-cover${posterReady ? " has-poster" : ""}${playing ? " is-playing" : ""}`}>
       <img
         className="video-cover-poster"
         src={assetUrl(poster)}
         alt=""
+        loading="lazy"
+        decoding="async"
         onLoad={() => setPosterReady(true)}
       />
       <span className="video-cover-shimmer" />
-      <video
-        ref={videoRef}
-        className={className}
-        src={assetUrl(src)}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        onPlaying={() => setPlaying(true)}
-        onError={() => setPlaying(false)}
-      />
+      {shouldLoad && (
+        <video
+          ref={videoRef}
+          className={className}
+          src={assetUrl(src)}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          onPlaying={handlePlaying}
+          onPause={() => setPlaying(false)}
+          onError={() => setPlaying(false)}
+        />
+      )}
     </div>
   );
 }
@@ -562,9 +629,9 @@ function ProjectCover({ projectId }) {
     ),
     system: (
       <>
-        <div className="cover-sheet cover-ds-left"><img src={assetUrl("/assets/design-system-standard.jpg")} alt="" /></div>
-        <div className="cover-sheet cover-ds-center"><img src={assetUrl("/assets/design-system-efficiency.jpg")} alt="" /></div>
-        <div className="cover-sheet cover-ds-right"><img src={assetUrl("/assets/design-system-handoff.jpg")} alt="" /></div>
+        <div className="cover-sheet cover-ds-left"><img src={assetUrl("/assets/design-system-standard.jpg")} alt="" loading="lazy" decoding="async" /></div>
+        <div className="cover-sheet cover-ds-center"><img src={assetUrl("/assets/design-system-efficiency.jpg")} alt="" loading="lazy" decoding="async" /></div>
+        <div className="cover-sheet cover-ds-right"><img src={assetUrl("/assets/design-system-handoff.jpg")} alt="" loading="lazy" decoding="async" /></div>
       </>
     ),
     redpacket: (
@@ -576,16 +643,16 @@ function ProjectCover({ projectId }) {
     ),
     message: (
       <>
-        <div className="cover-sheet cover-message-before"><img src={assetUrl("/assets/message-system.png")} alt="" /></div>
-        <div className="cover-sheet cover-message-after"><img src={assetUrl("/assets/message-system-overview.jpg")} alt="" /></div>
+        <div className="cover-sheet cover-message-before"><img src={assetUrl("/assets/message-system.png")} alt="" loading="lazy" decoding="async" /></div>
+        <div className="cover-sheet cover-message-after"><img src={assetUrl("/assets/message-system-overview.jpg")} alt="" loading="lazy" decoding="async" /></div>
         <div className="cover-status-dot" />
       </>
     ),
     ai: (
       <>
-        <div className="cover-sheet cover-ai-main"><img src={assetUrl("/assets/ai-core-experience.jpg")} alt="" /></div>
-        <div className="cover-sheet cover-ai-dark"><img src={assetUrl("/assets/ai-product-exploration.jpg")} alt="" /></div>
-        <div className="cover-sheet cover-ai-flow"><img src={assetUrl("/assets/ai-mainline.jpg")} alt="" /></div>
+        <div className="cover-sheet cover-ai-main"><img src={assetUrl("/assets/ai-core-experience.jpg")} alt="" loading="lazy" decoding="async" /></div>
+        <div className="cover-sheet cover-ai-dark"><img src={assetUrl("/assets/ai-product-exploration.jpg")} alt="" loading="lazy" decoding="async" /></div>
+        <div className="cover-sheet cover-ai-flow"><img src={assetUrl("/assets/ai-mainline.jpg")} alt="" loading="lazy" decoding="async" /></div>
       </>
     ),
     emoji: (
@@ -726,7 +793,7 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
                   </ul>
                 ) : null}
               </div>
-              <figure><img src={assetUrl(section.image)} alt={`${project.title}：${section.eyebrow}`} loading="lazy" /></figure>
+              <figure><img src={assetUrl(section.image)} alt={`${project.title}：${section.eyebrow}`} loading="lazy" decoding="async" /></figure>
             </section>
           ))}
         </div>
@@ -904,7 +971,7 @@ export function App() {
   return (
     <>
       <header className="site-header">
-        <a className="mark" href="#top" aria-label="WIN 首页">WIN</a>
+        <a className="mark" href="#top" aria-label="Win 首页">Win</a>
         <nav className="filter-nav" aria-label="作品筛选">
           {filters.map(([value, label]) => (
             <button
@@ -924,7 +991,7 @@ export function App() {
           {(filter === "all" || filter === "about") && (
             <>
               <article className="card intro-card reveal-card">
-                <img className="avatar" src={assetUrl("/assets/avatar.png")} alt="张文头像" />
+                <img className="avatar" src={assetUrl("/assets/avatar.webp")} alt="张文头像" width="720" height="720" decoding="async" fetchPriority="high" />
                 <div><span className="card-kicker">UI/UX 设计师</span><h1>你好，我是张文👋</h1><p>拥有 6 年 C 端产品经验，参与 TEMU、拼小圈和多多视频等产品建设，专注复杂业务体验、增长设计与设计系统。</p></div>
               </article>
               <button
