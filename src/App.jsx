@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
+const assetUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+
 const filters = [
   ["all", "全部"],
   ["about", "关于"],
@@ -506,8 +508,8 @@ function ProjectCover({ projectId }) {
     temu: (
       <video
         className="cover-temu-video"
-        src="/assets/videos/temu-aftersales.mp4?v=7"
-        poster="/assets/cover-temu-aftersales.png"
+        src={assetUrl("/assets/videos/temu-aftersales.mp4?v=7")}
+        poster={assetUrl("/assets/cover-temu-aftersales.png")}
         autoPlay
         muted
         loop
@@ -517,16 +519,16 @@ function ProjectCover({ projectId }) {
     ),
     system: (
       <>
-        <div className="cover-sheet cover-ds-left"><img src="/assets/design-system-standard.jpg" alt="" /></div>
-        <div className="cover-sheet cover-ds-center"><img src="/assets/design-system-efficiency.jpg" alt="" /></div>
-        <div className="cover-sheet cover-ds-right"><img src="/assets/design-system-handoff.jpg" alt="" /></div>
+        <div className="cover-sheet cover-ds-left"><img src={assetUrl("/assets/design-system-standard.jpg")} alt="" /></div>
+        <div className="cover-sheet cover-ds-center"><img src={assetUrl("/assets/design-system-efficiency.jpg")} alt="" /></div>
+        <div className="cover-sheet cover-ds-right"><img src={assetUrl("/assets/design-system-handoff.jpg")} alt="" /></div>
       </>
     ),
     redpacket: (
       <video
         className="cover-redpacket-video"
-        src="/assets/videos/redpacket.mp4"
-        poster="/assets/cover-redpacket-growth.png"
+        src={assetUrl("/assets/videos/redpacket.mp4")}
+        poster={assetUrl("/assets/cover-redpacket-growth.png")}
         autoPlay
         muted
         loop
@@ -536,23 +538,23 @@ function ProjectCover({ projectId }) {
     ),
     message: (
       <>
-        <div className="cover-sheet cover-message-before"><img src="/assets/message-system.png" alt="" /></div>
-        <div className="cover-sheet cover-message-after"><img src="/assets/message-system-overview.jpg" alt="" /></div>
+        <div className="cover-sheet cover-message-before"><img src={assetUrl("/assets/message-system.png")} alt="" /></div>
+        <div className="cover-sheet cover-message-after"><img src={assetUrl("/assets/message-system-overview.jpg")} alt="" /></div>
         <div className="cover-status-dot" />
       </>
     ),
     ai: (
       <>
-        <div className="cover-sheet cover-ai-main"><img src="/assets/ai-core-experience.jpg" alt="" /></div>
-        <div className="cover-sheet cover-ai-dark"><img src="/assets/ai-product-exploration.jpg" alt="" /></div>
-        <div className="cover-sheet cover-ai-flow"><img src="/assets/ai-mainline.jpg" alt="" /></div>
+        <div className="cover-sheet cover-ai-main"><img src={assetUrl("/assets/ai-core-experience.jpg")} alt="" /></div>
+        <div className="cover-sheet cover-ai-dark"><img src={assetUrl("/assets/ai-product-exploration.jpg")} alt="" /></div>
+        <div className="cover-sheet cover-ai-flow"><img src={assetUrl("/assets/ai-mainline.jpg")} alt="" /></div>
       </>
     ),
     emoji: (
       <video
         className="cover-emoji-video"
-        src="/assets/videos/emoji.mp4"
-        poster="/assets/images/多多emoji.webp"
+        src={assetUrl("/assets/videos/emoji.mp4")}
+        poster={assetUrl("/assets/images/多多emoji.webp")}
         autoPlay
         muted
         loop
@@ -691,7 +693,7 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
                   </ul>
                 ) : null}
               </div>
-              <figure><img src={section.image} alt={`${project.title}：${section.eyebrow}`} loading="lazy" /></figure>
+              <figure><img src={assetUrl(section.image)} alt={`${project.title}：${section.eyebrow}`} loading="lazy" /></figure>
             </section>
           ))}
         </div>
@@ -889,7 +891,7 @@ export function App() {
           {(filter === "all" || filter === "about") && (
             <>
               <article className="card intro-card reveal-card">
-                <img className="avatar" src="/assets/avatar.png" alt="张文头像" />
+                <img className="avatar" src={assetUrl("/assets/avatar.png")} alt="张文头像" />
                 <div><span className="card-kicker">UI/UX 设计师</span><h1>你好，我是张文👋</h1><p>拥有 6 年 C 端产品经验，参与 TEMU、拼小圈和多多视频等产品建设，专注复杂业务体验、增长设计与设计系统。</p></div>
               </article>
               <button
@@ -936,14 +938,14 @@ export function App() {
                 type="resume"
                 title="个人简历"
                 meta="3.1 MB"
-                href="/assets/wen-zhang-resume.pdf"
+                href={assetUrl("/assets/wen-zhang-resume.pdf")}
                 fileName="张文_UIUX_简历.pdf"
               />
               <DownloadCard
                 type="portfolio"
                 title="作品集"
                 meta="15 MB"
-                href="/assets/wen-zhang-portfolio.pdf"
+                href={assetUrl("/assets/wen-zhang-portfolio.pdf")}
                 fileName="张文_UIUX_作品集.pdf"
                 wide
               />

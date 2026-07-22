@@ -410,11 +410,11 @@ html[data-view-transition="detail-close"]::view-transition-new(project-cover-emo
   .site-footer { width: calc(100% - 32px); min-height: 92px; }
   .site-footer span:last-child { display: none; }
   .back-top { display: none; }
-  .detail-page { padding: 82px 14px 54px; }
+  .detail-page { padding: 82px 24px 54px; }
   .detail-close { right: 16px; top: 14px; width: 46px; height: 46px; }
   .detail-back-top { right: 16px; bottom: 16px; width: 46px; height: 46px; }
   .detail-hero { width: 100%; aspect-ratio: 1.08; border-radius: 24px; }
-  .detail-close-snapshot { top: 82px; width: calc(100vw - 28px); }
+  .detail-close-snapshot { top: 82px; width: calc(100vw - 48px); }
   .detail-intro { margin: 68px auto 78px; }
   .detail-intro h1 { font-size: 32px; }
   .detail-lead { font-size: 17px; }
