@@ -17,7 +17,7 @@ const projects = [
     title: "TEMU 售后体验系统",
     label: "复杂业务体验",
     period: "2022 — 2024",
-    cover: "/assets/cover-temu-aftersales.png",
+    cover: "/assets/posters/temu-aftersales-first-frame.webp",
     size: "wide",
     tone: "ink",
     intro: "将退款、退货、物流和异常规则，转译为用户可执行、团队可复用的售后体验框架。",
@@ -142,7 +142,7 @@ const projects = [
     title: "拼小圈红包增长设计",
     label: "增长与社交互动",
     period: "2019 — 2022",
-    cover: "/assets/cover-redpacket-growth.png",
+    cover: "/assets/posters/redpacket-first-frame.webp",
     size: "wide",
     tone: "red",
     intro: "从认知建立到互动增长、内容消费与交易转化，持续推动红包场景演进。",
@@ -326,7 +326,7 @@ const projects = [
     title: "多多 Emoji 与视觉作品",
     label: "情绪表达与视觉设计",
     period: "上线 5 年+",
-    cover: "/assets/images/多多emoji.webp",
+    cover: "/assets/posters/emoji-first-frame.webp",
     size: "standard",
     tone: "yellow",
     intro: "一套跨越评论、聊天、评价和内部沟通场景的情绪表达资产。",
@@ -339,7 +339,7 @@ const projects = [
         eyebrow: "Emoji 资产",
         title: "让表情保持统一角色感，也拥有足够的情绪跨度。",
         body: "整套资产覆盖开心、疑惑、喜爱、惊讶、墨镜、哭、怒、坏笑、点赞、握手、爱心、红包等情绪与动作，让用户用更低成本表达语气和态度。",
-        image: "/assets/images/多多emoji.webp",
+        image: "/assets/posters/emoji-first-frame.webp",
       },
       {
         eyebrow: "实际应用",
@@ -503,18 +503,61 @@ function ContactModal({ onClose }) {
   );
 }
 
-function ProjectCover({ projectId }) {
-  const covers = {
-    temu: (
+function VideoCover({ src, poster, className }) {
+  const videoRef = useRef(null);
+  const [posterReady, setPosterReady] = useState(false);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return undefined;
+
+    setPosterReady(false);
+    setPlaying(false);
+
+    const tryPlay = () => {
+      const playRequest = video.play();
+      if (playRequest) playRequest.catch(() => setPlaying(false));
+    };
+
+    if (video.readyState >= 2) tryPlay();
+    else video.addEventListener("loadeddata", tryPlay, { once: true });
+
+    return () => video.removeEventListener("loadeddata", tryPlay);
+  }, [src]);
+
+  return (
+    <div className={`video-cover${posterReady ? " has-poster" : ""}${playing ? " is-playing" : ""}`}>
+      <img
+        className="video-cover-poster"
+        src={assetUrl(poster)}
+        alt=""
+        onLoad={() => setPosterReady(true)}
+      />
+      <span className="video-cover-shimmer" />
       <video
-        className="cover-temu-video"
-        src={assetUrl("/assets/videos/temu-aftersales.mp4?v=7")}
-        poster={assetUrl("/assets/cover-temu-aftersales.png")}
+        ref={videoRef}
+        className={className}
+        src={assetUrl(src)}
         autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
+        onPlaying={() => setPlaying(true)}
+        onError={() => setPlaying(false)}
+      />
+    </div>
+  );
+}
+
+function ProjectCover({ projectId }) {
+  const covers = {
+    temu: (
+      <VideoCover
+        className="cover-temu-video"
+        src="/assets/videos/temu-aftersales.mp4?v=8"
+        poster="/assets/posters/temu-aftersales-first-frame.webp"
       />
     ),
     system: (
@@ -525,15 +568,10 @@ function ProjectCover({ projectId }) {
       </>
     ),
     redpacket: (
-      <video
+      <VideoCover
         className="cover-redpacket-video"
-        src={assetUrl("/assets/videos/redpacket.mp4")}
-        poster={assetUrl("/assets/cover-redpacket-growth.png")}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
+        src="/assets/videos/redpacket.mp4"
+        poster="/assets/posters/redpacket-first-frame.webp"
       />
     ),
     message: (
@@ -551,15 +589,10 @@ function ProjectCover({ projectId }) {
       </>
     ),
     emoji: (
-      <video
+      <VideoCover
         className="cover-emoji-video"
-        src={assetUrl("/assets/videos/emoji.mp4")}
-        poster={assetUrl("/assets/images/多多emoji.webp")}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
+        src="/assets/videos/emoji.mp4"
+        poster="/assets/posters/emoji-first-frame.webp"
       />
     ),
   };
