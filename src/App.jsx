@@ -326,7 +326,7 @@ const projects = [
     title: "多多 Emoji 与视觉作品",
     label: "情绪表达与视觉设计",
     period: "上线 5 年+",
-    cover: "/assets/posters/emoji-first-frame.webp",
+    cover: "/assets/posters/emoji-last-frame.webp",
     size: "standard",
     tone: "yellow",
     intro: "一套跨越评论、聊天、评价和内部沟通场景的情绪表达资产。",
@@ -339,7 +339,7 @@ const projects = [
         eyebrow: "Emoji 资产",
         title: "让表情保持统一角色感，也拥有足够的情绪跨度。",
         body: "整套资产覆盖开心、疑惑、喜爱、惊讶、墨镜、哭、怒、坏笑、点赞、握手、爱心、红包等情绪与动作，让用户用更低成本表达语气和态度。",
-        image: "/assets/posters/emoji-first-frame.webp",
+        image: "/assets/posters/emoji-last-frame.webp",
       },
       {
         eyebrow: "实际应用",
@@ -659,7 +659,7 @@ function ProjectCover({ projectId }) {
       <VideoCover
         className="cover-emoji-video"
         src="/assets/videos/emoji.mp4"
-        poster="/assets/posters/emoji-first-frame.webp"
+        poster="/assets/posters/emoji-last-frame.webp"
       />
     ),
   };

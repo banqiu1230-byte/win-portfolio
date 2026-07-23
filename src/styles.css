@@ -267,7 +267,7 @@ html[data-view-transition="detail-close"]::view-transition-new(project-cover-emo
 .project-card.is-transitioning .project-copy, .project-card.is-transitioning .open-icon { opacity: 0; }
 .project-copy h2 { margin: 0; font-size: 25px; line-height: 1.2; letter-spacing: -.025em; font-weight: 500; }
 .project-copy p { grid-column: 1 / -1; margin: 15px 0 0; max-width: 570px; color: var(--text-soft); font-size: 14px; line-height: 1.7; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
-.project-period { position: absolute; right: 28px; top: 27px; color: var(--muted); font-size: 12px; line-height: 1; white-space: nowrap; }
+.project-period { position: absolute; right: 28px; top: 24px; color: var(--muted); font-size: 12px; line-height: 21px; white-space: nowrap; }
 
 .tone-ink .project-media, .detail-hero.tone-ink { background: #e8ecea; }
 .tone-blue .project-media, .detail-hero.tone-blue { background: #dce5ec; }
@@ -412,7 +412,7 @@ html[data-view-transition="detail-close"]::view-transition-new(project-cover-emo
   .project-media, .project-standard .project-media { height: 235px; }
   .project-copy { height: 205px; padding: 23px; display: block; }
   .project-copy h2 { font-size: 23px; }
-  .project-period { right: 23px; top: 24px; margin: 0; }
+  .project-period { right: 23px; top: 23px; margin: 0; }
   .philosophy-card, .experience-card, .skill-card, .closing-card { padding: 25px; }
   .experience-row { grid-template-columns: 1fr auto; gap: 6px 12px; padding: 12px 0; }
   .experience-row span { grid-column: 1 / -1; }
