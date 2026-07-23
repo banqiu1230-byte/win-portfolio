@@ -17,7 +17,7 @@ const projects = [
     title: "TEMU 售后体验系统",
     label: "复杂业务体验",
     period: "2022 — 2024",
-    cover: "/assets/posters/temu-aftersales-first-frame.webp",
+    cover: "/assets/posters/temu-aftersales-poster.webp",
     size: "wide",
     tone: "ink",
     intro: "将退款、退货、物流和异常规则，转译为用户可执行、团队可复用的售后体验框架。",
@@ -624,7 +624,7 @@ function ProjectCover({ projectId }) {
       <VideoCover
         className="cover-temu-video"
         src="/assets/videos/temu-aftersales.mp4?v=8"
-        poster="/assets/posters/temu-aftersales-first-frame.webp"
+        poster="/assets/posters/temu-aftersales-poster.webp"
       />
     ),
     system: (
