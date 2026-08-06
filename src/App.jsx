@@ -244,7 +244,7 @@ const projectDrafts = [
     title: "多多视频消息体系",
     label: "信息架构",
     period: "2024 — 2025",
-    cover: "/assets/cover-message-system.png",
+    cover: "/assets/message-cover-20260806.png",
     size: "standard",
     tone: "violet",
     intro: "通过角色分层与优先级重排，提升普通用户与创作者的消息获取效率。",
@@ -979,7 +979,7 @@ function ProjectCover({ projectId, sharedDestination = false }) {
       <DecodedImage
         wrapperClassName="cover-static-media cover-message-media"
         className="cover-message-phones"
-        src="/assets/message-system-phones.png"
+        src="/assets/message-cover-20260806.png"
         alt=""
         loading="lazy"
       />

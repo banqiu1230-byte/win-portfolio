@@ -15,8 +15,8 @@
   --pill-active: #fff;
   --floating: rgba(255, 255, 255, 0.9);
   --soft-surface: #efede9;
-  --image-surface: #ddd9d3;
-  --shimmer-highlight: rgba(255, 255, 255, 0.64);
+  --image-surface: #e7eaee;
+  --shimmer-highlight: rgba(255, 255, 255, 0.48);
   --download-surface: #e4e7df;
   --portfolio-surface: #e4e3ec;
   --shadow: 0 18px 45px rgba(41, 37, 31, 0.07), 0 2px 5px rgba(41, 37, 31, 0.03);
@@ -249,7 +249,7 @@ html[data-view-transition="detail-close"]::view-transition-new(project-cover-emo
 }
 .project-surface { position: absolute; inset: 0; z-index: 0; border-radius: inherit; background: var(--card); }
 .project-wide { grid-column: span 2; }
-.project-media { position: relative; z-index: 1; height: 310px; border-radius: var(--radius) var(--radius) 0 0; background: #e8e5df; overflow: hidden; }
+.project-media { position: relative; z-index: 1; height: 310px; border-radius: var(--radius) var(--radius) 0 0; background: var(--image-surface); overflow: hidden; }
 .cover-art { position: absolute; inset: 0; overflow: hidden; isolation: isolate; }
 .cover-art::before { display: none; }
 .cover-sheet { position: absolute; overflow: hidden; border: 1px solid rgba(20,20,18,.1); background: #fff; box-shadow: 0 18px 38px rgba(28,26,22,.18); transition: transform .65s cubic-bezier(.2,.75,.2,1); }
@@ -307,29 +307,29 @@ html[data-view-transition^="detail-"] .video-cover-shimmer::after { animation-pl
 .cover-redpacket::after { display: none; }
 .cover-redpacket-video { object-position: center; }
 
-.cover-message {
-  background:
-    radial-gradient(circle at 68% 18%, rgba(255,255,255,.9), transparent 34%),
-    linear-gradient(150deg, #efedf3 0%, #deddea 54%, #cbcedc 100%);
-}
+.project-card[data-project-id="message"] .project-media { background: var(--image-surface); }
+.cover-message { background: transparent; }
 .cover-message::before { display: none; }
-.cover-message-media { overflow: visible; }
+.cover-message-media {
+  inset: -1px;
+  overflow: hidden;
+  background: transparent;
+}
 .cover-message-media > .cover-message-phones {
   position: absolute;
-  inset: -5% -4% -13%;
-  width: 108%;
-  height: 118%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 .cover-message-phones {
   position: absolute;
-  inset: -5% -4% -13%;
+  inset: 0;
   z-index: 2;
-  width: 108%;
-  height: 118%;
+  width: 100%;
+  height: 100%;
   display: block;
-  object-fit: contain;
-  object-position: center bottom;
-  filter: drop-shadow(0 24px 30px rgba(40,34,52,.2));
+  object-fit: cover;
+  object-position: center;
 }
 
 .cover-ai,
@@ -360,6 +360,7 @@ html[data-view-transition^="detail-"] .video-cover-shimmer::after { animation-pl
 .tone-violet .project-media, .detail-hero.tone-violet { background: #dddce6; }
 .tone-lime .project-media, .detail-hero.tone-lime { background: #10130e; }
 .tone-yellow .project-media, .detail-hero.tone-yellow { background: #eee1a8; }
+.project-card .project-media { background: var(--image-surface); }
 html[data-theme="dark"] .project-media { background: var(--image-surface); }
 
 .philosophy-card { grid-column: span 2; min-height: 230px; padding: 35px; display: flex; flex-direction: column; justify-content: space-between; }
