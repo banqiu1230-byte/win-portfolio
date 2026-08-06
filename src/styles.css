@@ -15,7 +15,7 @@
   --pill-active: #fff;
   --floating: rgba(255, 255, 255, 0.9);
   --soft-surface: #efede9;
-  --image-surface: #e7eaee;
+  --image-surface: #e9e6e1;
   --shimmer-highlight: rgba(255, 255, 255, 0.48);
   --download-surface: #e4e7df;
   --portfolio-surface: #e4e3ec;
@@ -426,6 +426,11 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
 .detail-back-top:active { transform: translateY(0) scale(.96); }
 .detail-page { position: relative; z-index: 1; width: min(100%, 1080px); min-height: 100%; margin: 0 auto; padding: 58px 40px 80px; outline: none; }
 .detail-hero { width: min(520px, 62vw); aspect-ratio: 1.27; margin: 0 auto; border-radius: 22px; overflow: hidden; box-shadow: 0 20px 54px rgba(37,33,28,.09); }
+.detail-hero.detail-hero-message,
+.detail-hero.detail-hero-message .cover-art,
+.detail-hero.detail-hero-message .cover-message,
+.detail-hero.detail-hero-message .decoded-image,
+.detail-hero.detail-hero-message .cover-message-media { background: transparent; }
 .detail-hero.has-video-cover { width: min(728px, 100%); aspect-ratio: 16 / 9; }
 .detail-hero.video-ratio-emoji { width: min(546px, 100%); aspect-ratio: 1112 / 834; }
 .detail-hero.has-video-cover .video-cover-poster,
@@ -606,8 +611,8 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
 .about-downloads-card { grid-column: span 1; }
 .home-downloads-card { min-height: 230px; }
 .about-download-list { display: grid; gap: 8px; }
-.about-download-list a { min-height: 72px; padding: 13px 14px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-radius: 16px; color: var(--text); background: var(--soft-surface); text-decoration: none; transition: color .2s ease, background-color .2s ease, transform .2s ease; }
-.about-download-list a:hover { color: var(--text); background: var(--image-surface); }
+.about-download-list a { min-height: 72px; padding: 13px 14px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-radius: 16px; color: var(--text); background: var(--soft-surface); text-decoration: none; transition: background-color .18s ease; }
+.about-download-list a:hover { color: var(--text); background: color-mix(in srgb, var(--soft-surface) 96%, #000 4%); }
 .about-download-list a > span { display: grid; gap: 5px; }
 .about-download-list small { color: var(--muted); font-size: 10px; }
 .about-download-list a:hover small { color: var(--muted); opacity: 1; }

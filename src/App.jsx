@@ -242,7 +242,7 @@ const projectDrafts = [
     id: "message",
     category: "work",
     title: "多多视频消息体系",
-    label: "信息架构",
+    label: "消息分层 / 优先级策略",
     period: "2024 — 2025",
     cover: "/assets/message-cover-20260806.png",
     size: "standard",
@@ -1291,7 +1291,7 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
       <button className={`detail-back-top${showBackTop ? " is-visible" : ""}`} onClick={() => layerRef.current?.scrollTo({ top: 0, behavior: "smooth" })} aria-label="返回详情页顶部" tabIndex={showBackTop ? 0 : -1}>↑</button>
       <article className={`detail-page tone-${project.tone}`} data-project-id={project.id} tabIndex="-1" ref={panelRef}>
         <header
-          className={`detail-hero tone-${project.tone}${videoCoverProjectIds.has(project.id) ? ` has-video-cover video-ratio-${project.id}` : ""}`}
+          className={`detail-hero tone-${project.tone}${project.id === "message" ? " detail-hero-message" : ""}${videoCoverProjectIds.has(project.id) ? ` has-video-cover video-ratio-${project.id}` : ""}`}
           style={{ viewTransitionName: `project-cover-${project.id}` }}
         >
           <ProjectCover projectId={project.id} sharedDestination />
@@ -1558,7 +1558,7 @@ function AboutDetail({ transitioning, source, onClose }) {
             <span className="card-kicker">下载资料</span>
             <div className="about-download-list">
               <DownloadLink href="/assets/wen-zhang-resume.pdf" fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
-                <span><small>PDF · 346 KB</small><strong>个人简历</strong></span>
+                <span><small>PDF · 347 KB</small><strong>个人简历</strong></span>
                 <DownloadIcon />
               </DownloadLink>
               <DownloadLink href="/assets/wen-zhang-portfolio.pdf" fileName="张文_UIUX_作品集.pdf" ariaLabel="下载作品集">
@@ -1879,7 +1879,7 @@ export function App() {
                 <span className="card-kicker">下载资料</span>
                 <div className="about-download-list">
                   <DownloadLink href="/assets/wen-zhang-resume.pdf" fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
-                    <span><small>PDF · 346 KB</small><strong>个人简历</strong></span>
+                    <span><small>PDF · 347 KB</small><strong>个人简历</strong></span>
                     <DownloadIcon />
                   </DownloadLink>
                   <DownloadLink href="/assets/wen-zhang-portfolio.pdf" fileName="张文_UIUX_作品集.pdf" ariaLabel="下载作品集">
