@@ -639,6 +639,126 @@ function ContactModal({ onClose }) {
   );
 }
 
+const detailImageAspectRatios = {
+  "/assets/temu-20260806-06.png": "2792 / 2160",
+  "/assets/redpacket-20260806-05.png": "3202 / 2160",
+  "/assets/redpacket-20260806-06.png": "2300 / 2160",
+  "/assets/redpacket-20260806-13.png": "3352 / 2160",
+  "/assets/message-20260804-01-problem.png": "1920 / 2160",
+  "/assets/message-20260804-02-data.png": "1920 / 1666",
+  "/assets/message-20260804-03-priority.png": "1920 / 1256",
+  "/assets/message-20260804-04-after.png": "1920 / 2160",
+  "/assets/message-20260804-05-interaction.png": "1920 / 2160",
+  "/assets/message-20260806-05-interaction.png": "1920 / 2160",
+  "/assets/message-20260806-07-outcome.png": "3416 / 1312",
+  "/assets/system-20260804-01.png": "2022 / 1748",
+  "/assets/system-20260804-02.png": "2468 / 2988",
+  "/assets/system-20260804-03.png": "3360 / 838",
+  "/assets/emoji-detail-58-v3.png": "3484 / 3352",
+  "/assets/ai-detail/home.png": "1170 / 2532",
+  "/assets/ai-detail/studio.png": "1170 / 2532",
+  "/assets/ai-detail/studio-color.png": "1170 / 2532",
+  "/assets/ai-detail/studio-tire.png": "1170 / 2532",
+  "/assets/ai-detail/community-loading.png": "1170 / 2532",
+  "/assets/ai-detail/vehicle-loading.png": "1170 / 2532",
+};
+
+function getDetailImageAspectRatio(src) {
+  return detailImageAspectRatios[src] || "16 / 9";
+}
+
+function DecodedImage({ src, alt = "", className = "", wrapperClassName = "", loading = "lazy", fetchPriority, aspectRatio }) {
+  const [status, setStatus] = useState("loading");
+
+  useEffect(() => {
+    setStatus("loading");
+  }, [src]);
+
+  async function revealImage(event) {
+    const image = event.currentTarget;
+    try {
+      await image.decode?.();
+    } catch {
+      // A completed image can still be displayed when decode() is unavailable or rejects.
+    }
+    setStatus("ready");
+  }
+
+  return (
+    <span
+      className={`decoded-image is-${status}${wrapperClassName ? ` ${wrapperClassName}` : ""}`}
+      style={aspectRatio ? { "--media-aspect-ratio": aspectRatio } : undefined}
+    >
+      <span className="media-shimmer" aria-hidden="true" />
+      <img
+        className={className}
+        src={assetUrl(src)}
+        alt={alt}
+        loading={loading}
+        fetchPriority={fetchPriority}
+        decoding="async"
+        onLoad={revealImage}
+        onError={() => setStatus("error")}
+      />
+    </span>
+  );
+}
+
+function DownloadLink({ href, fileName, className = "", children, ariaLabel }) {
+  const [status, setStatus] = useState("idle");
+  const resetTimerRef = useRef(null);
+
+  useEffect(() => () => window.clearTimeout(resetTimerRef.current), []);
+
+  async function handleDownload(event) {
+    event.preventDefault();
+    if (status === "loading") return;
+    setStatus("loading");
+
+    try {
+      const response = await fetch(assetUrl(href));
+      if (!response.ok) throw new Error(`Download failed: ${response.status}`);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
+
+    window.clearTimeout(resetTimerRef.current);
+    resetTimerRef.current = window.setTimeout(() => setStatus("idle"), 2600);
+  }
+
+  const feedback = status === "loading"
+    ? "正在准备下载…"
+    : status === "success"
+      ? "下载已开始"
+      : status === "error"
+        ? "文件加载失败，请稍后重试"
+        : "";
+
+  return (
+    <a
+      className={className}
+      href={assetUrl(href)}
+      download={fileName}
+      onClick={handleDownload}
+      aria-label={ariaLabel}
+      aria-busy={status === "loading"}
+    >
+      {children}
+      {feedback ? <span className={`download-feedback is-${status}`} role="status">{feedback}</span> : null}
+    </a>
+  );
+}
+
 function VideoCover({ src, poster, className, playbackKey }) {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
@@ -648,6 +768,7 @@ function VideoCover({ src, poster, className, playbackKey }) {
   const [hasStarted, setHasStarted] = useState(false);
   const [posterFailed, setPosterFailed] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const canLoadVideo = shouldLoad && (posterReady || posterFailed);
 
   const updateStarted = (nextValue) => {
     setHasStarted(nextValue);
@@ -708,6 +829,13 @@ function VideoCover({ src, poster, className, playbackKey }) {
   }, []);
 
   useEffect(() => {
+    setPosterReady(false);
+    setHasStarted(false);
+    setPosterFailed(false);
+    setVideoFailed(false);
+  }, [src, poster]);
+
+  useEffect(() => {
     const video = videoRef.current;
     if (!video) return undefined;
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -731,7 +859,7 @@ function VideoCover({ src, poster, className, playbackKey }) {
       rememberVideoPosition(video);
       video.pause();
     };
-  }, [isVisible, shouldLoad, src, playbackKey]);
+  }, [isVisible, canLoadVideo, src, playbackKey]);
 
   return (
     <div
@@ -746,7 +874,12 @@ function VideoCover({ src, poster, className, playbackKey }) {
         loading="eager"
         fetchPriority="high"
         decoding="async"
-        onLoad={() => {
+        onLoad={async (event) => {
+          try {
+            await event.currentTarget.decode?.();
+          } catch {
+            // The poster is still usable when decode() is unsupported.
+          }
           setPosterReady(true);
           setPosterFailed(false);
         }}
@@ -756,16 +889,15 @@ function VideoCover({ src, poster, className, playbackKey }) {
         }}
       />
       <span className="video-cover-shimmer" />
-      {shouldLoad && (
+      {canLoadVideo && (
         <video
           ref={videoRef}
           className={className}
           src={assetUrl(src)}
-          poster={assetUrl(poster)}
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           data-playback-key={playbackKey}
           onLoadedMetadata={restorePlaybackPosition}
           onLoadedData={() => {
@@ -810,12 +942,12 @@ function ProjectCover({ projectId, sharedDestination = false }) {
       />
     ),
     system: (
-      <img
+      <DecodedImage
+        wrapperClassName="cover-static-media"
         className="cover-system-laptop"
-        src={assetUrl("/assets/design-system-laptop.png")}
+        src="/assets/design-system-laptop.png"
         alt=""
         loading="lazy"
-        decoding="async"
       />
     ),
     redpacket: (
@@ -827,12 +959,12 @@ function ProjectCover({ projectId, sharedDestination = false }) {
       />
     ),
     message: (
-      <img
+      <DecodedImage
+        wrapperClassName="cover-static-media cover-message-media"
         className="cover-message-phones"
-        src={assetUrl("/assets/message-system-phones.png")}
+        src="/assets/message-system-phones.png"
         alt=""
         loading="lazy"
-        decoding="async"
       />
     ),
     ai: (
@@ -901,12 +1033,12 @@ function ProjectCard({ project, index, activeId, transitioningId, onOpen }) {
 
 function DownloadCard({ type, title, meta, href, fileName, wide = false }) {
   return (
-    <a
+    <DownloadLink
       className={`card download-card reveal-card${wide ? " download-wide" : ""}`}
       href={href}
-      download={fileName}
+      fileName={fileName}
       data-project-id={`download-${type}`}
-      aria-label={`下载${title}`}
+      ariaLabel={`下载${title}`}
     >
       <div className="download-visual" aria-hidden="true">
         <span className="document-sheet">
@@ -919,7 +1051,7 @@ function DownloadCard({ type, title, meta, href, fileName, wide = false }) {
         <h2>{title}</h2>
         <span className="download-link">下载 <DownloadIcon /></span>
       </div>
-    </a>
+    </DownloadLink>
   );
 }
 
@@ -948,12 +1080,12 @@ function EmojiMarquee() {
             {[0, 1].map((copyIndex) => (
               <div className="emoji-marquee-group" aria-hidden={copyIndex === 1 ? "true" : undefined} key={copyIndex}>
                 {cards.map((image, cardIndex) => (
-                  <img
+                  <DecodedImage
+                    wrapperClassName="emoji-marquee-card-shell"
                     className="emoji-marquee-card"
-                    src={assetUrl(image)}
+                    src={image}
                     alt=""
                     loading="lazy"
-                    decoding="async"
                     key={`${copyIndex}-${cardIndex}-${image}`}
                   />
                 ))}
@@ -1194,7 +1326,13 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
                             onClick={(event) => openLightbox(galleryIndex, event.currentTarget)}
                             aria-label={`放大查看：${section.title}${sectionImages.length > 1 ? `（${imageIndex + 1}）` : ""}`}
                           >
-                            <img src={assetUrl(image)} alt={`${project.detailTitle || project.title}：${section.eyebrow}`} loading="lazy" decoding="async" />
+                            <DecodedImage
+                              wrapperClassName="case-image-loader"
+                              src={image}
+                              alt={`${project.detailTitle || project.title}：${section.eyebrow}`}
+                              loading="lazy"
+                              aspectRatio={getDetailImageAspectRatio(image)}
+                            />
                             {section.imageLabel && imageIndex === 0 ? <span className="case-image-label">{section.imageLabel}</span> : null}
                             <span className="case-image-zoom" aria-hidden="true"><ZoomIcon /></span>
                           </button>
@@ -1313,7 +1451,7 @@ function AboutDetail({ transitioning, source, onClose }) {
             className={`card intro-card about-profile-card${source === "intro" ? " about-transition-target" : ""}`}
             style={{ viewTransitionName: transitioning && source === "intro" ? "project-content-about" : "none" }}
           >
-            <img className="avatar" src={assetUrl("/assets/avatar.webp")} alt="张文头像" width="720" height="720" decoding="async" />
+            <DecodedImage wrapperClassName="avatar-loader" className="avatar" src="/assets/avatar.webp" alt="张文头像" loading="eager" fetchPriority="high" />
             <div>
               <span className="card-kicker">UI/UX 设计师</span>
               <h1>你好，我是张文👋</h1>
@@ -1402,14 +1540,14 @@ function AboutDetail({ transitioning, source, onClose }) {
           <article className="card about-downloads-card about-detail-card">
             <span className="card-kicker">下载资料</span>
             <div className="about-download-list">
-              <a href={assetUrl("/assets/wen-zhang-resume.pdf")} download="张文_UIUX_简历.pdf">
+              <DownloadLink href="/assets/wen-zhang-resume.pdf" fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
                 <span><small>PDF · 346 KB</small><strong>个人简历</strong></span>
                 <DownloadIcon />
-              </a>
-              <a href={assetUrl("/assets/wen-zhang-portfolio.pdf")} download="张文_UIUX_作品集.pdf">
+              </DownloadLink>
+              <DownloadLink href="/assets/wen-zhang-portfolio.pdf" fileName="张文_UIUX_作品集.pdf" ariaLabel="下载作品集">
                 <span><small>PDF · 17 MB</small><strong>作品集</strong></span>
                 <DownloadIcon />
-              </a>
+              </DownloadLink>
             </div>
           </article>
         </div>
@@ -1647,7 +1785,7 @@ export function App() {
                   style={{ viewTransitionName: transitioningId === "about" && activeId !== "about" && aboutSource === "intro" ? "project-shell-about" : "none" }}
                   aria-hidden="true"
                 />
-                <img className="avatar" src={assetUrl("/assets/avatar.webp")} alt="张文头像" width="720" height="720" decoding="async" fetchPriority="high" />
+                <DecodedImage wrapperClassName="avatar-loader" className="avatar" src="/assets/avatar.webp" alt="张文头像" loading="eager" fetchPriority="high" />
                 <div><span className="card-kicker">UI/UX 设计师</span><h1>你好，我是张文👋</h1><p>{aboutIntro}</p></div>
                 <span className="intro-open-icon" aria-hidden="true"><ArrowIcon /></span>
               </button>
@@ -1723,14 +1861,14 @@ export function App() {
               <article className="card about-downloads-card about-detail-card home-downloads-card reveal-card">
                 <span className="card-kicker">下载资料</span>
                 <div className="about-download-list">
-                  <a href={assetUrl("/assets/wen-zhang-resume.pdf")} download="张文_UIUX_简历.pdf">
+                  <DownloadLink href="/assets/wen-zhang-resume.pdf" fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
                     <span><small>PDF · 346 KB</small><strong>个人简历</strong></span>
                     <DownloadIcon />
-                  </a>
-                  <a href={assetUrl("/assets/wen-zhang-portfolio.pdf")} download="张文_UIUX_作品集.pdf">
+                  </DownloadLink>
+                  <DownloadLink href="/assets/wen-zhang-portfolio.pdf" fileName="张文_UIUX_作品集.pdf" ariaLabel="下载作品集">
                     <span><small>PDF · 17 MB</small><strong>作品集</strong></span>
                     <DownloadIcon />
-                  </a>
+                  </DownloadLink>
                 </div>
               </article>
               <article className="card closing-card closing-with-downloads reveal-card">
