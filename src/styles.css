@@ -15,7 +15,8 @@
   --pill-active: #fff;
   --floating: rgba(255, 255, 255, 0.9);
   --soft-surface: #efede9;
-  --image-surface: #e5e2dc;
+  --image-surface: #ddd9d3;
+  --shimmer-highlight: rgba(255, 255, 255, 0.64);
   --download-surface: #e4e7df;
   --portfolio-surface: #e4e3ec;
   --shadow: 0 18px 45px rgba(41, 37, 31, 0.07), 0 2px 5px rgba(41, 37, 31, 0.03);
@@ -36,6 +37,7 @@ html[data-theme="dark"] {
   --floating: rgba(42, 43, 38, 0.94);
   --soft-surface: #262721;
   --image-surface: #24251f;
+  --shimmer-highlight: rgba(255, 255, 255, 0.1);
   --download-surface: #2d302a;
   --portfolio-surface: #302e38;
   --shadow: 0 18px 46px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.2);
@@ -162,7 +164,7 @@ html[data-view-transition="detail-close"]::view-transition-new(project-cover-emo
 .decoded-image > img { position: relative; z-index: 1; display: block; opacity: 0; transition: opacity .28s ease; }
 .decoded-image.is-ready > img { opacity: 1; }
 .media-shimmer { position: absolute; inset: 0; z-index: 3; overflow: hidden; background: var(--image-surface); opacity: 1; pointer-events: none; transition: opacity .24s ease; }
-.media-shimmer::after { content: ""; position: absolute; inset: -40% -75%; background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.62) 49%, transparent 60%); transform: translateX(-38%); animation: media-shimmer 1.45s cubic-bezier(.4,0,.2,1) infinite; }
+.media-shimmer::after { content: ""; position: absolute; inset: -40% -75%; background: linear-gradient(105deg, transparent 38%, var(--shimmer-highlight) 49%, transparent 60%); transform: translateX(-38%); animation: media-shimmer 1.45s cubic-bezier(.4,0,.2,1) infinite; }
 .decoded-image.is-ready .media-shimmer,
 .decoded-image.is-error .media-shimmer { opacity: 0; }
 .decoded-image.is-error > img { visibility: hidden; }
@@ -177,7 +179,6 @@ html[data-view-transition="detail-close"]::view-transition-new(project-cover-emo
 @keyframes media-shimmer { to { transform: translateX(38%); } }
 
 .download-feedback { position: fixed; left: 50%; bottom: 28px; z-index: 500; width: max-content; max-width: calc(100vw - 32px); padding: 11px 16px; border-radius: 999px; color: #f7f5f1; background: rgba(35,35,32,.92); box-shadow: 0 12px 30px rgba(0,0,0,.2); transform: translateX(-50%); font-size: 14px; line-height: 1; pointer-events: none; animation: download-feedback-in .2s ease-out both; }
-.download-feedback.is-error { background: #8c2f27; }
 @keyframes download-feedback-in { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
 .card-kicker { display: block; margin-bottom: 13px; color: var(--muted); font-size: 14px; line-height: 1.5; letter-spacing: 0; }
@@ -264,7 +265,7 @@ html[data-view-transition="detail-close"]::view-transition-new(project-cover-emo
 .video-cover.has-started video { opacity: 1; }
 .video-cover.has-started .video-cover-poster { opacity: 0; }
 .video-cover-shimmer { position: absolute; inset: 0; z-index: 3; overflow: hidden; background: var(--image-surface); opacity: 1; transition: opacity .28s ease; pointer-events: none; }
-.video-cover-shimmer::after { content: ""; position: absolute; inset: -35% -70%; background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.7) 49%, transparent 60%); transform: translateX(-38%); animation: video-cover-shimmer 1.45s cubic-bezier(.4,0,.2,1) infinite; }
+.video-cover-shimmer::after { content: ""; position: absolute; inset: -35% -70%; background: linear-gradient(105deg, transparent 38%, var(--shimmer-highlight) 49%, transparent 60%); transform: translateX(-38%); animation: video-cover-shimmer 1.45s cubic-bezier(.4,0,.2,1) infinite; }
 .video-cover.has-poster .video-cover-shimmer,
 .video-cover.has-started .video-cover-shimmer { opacity: 0; }
 .video-cover.has-media-error .video-cover-poster,
@@ -359,6 +360,7 @@ html[data-view-transition^="detail-"] .video-cover-shimmer::after { animation-pl
 .tone-violet .project-media, .detail-hero.tone-violet { background: #dddce6; }
 .tone-lime .project-media, .detail-hero.tone-lime { background: #10130e; }
 .tone-yellow .project-media, .detail-hero.tone-yellow { background: #eee1a8; }
+html[data-theme="dark"] .project-media { background: var(--image-surface); }
 
 .philosophy-card { grid-column: span 2; min-height: 230px; padding: 35px; display: flex; flex-direction: column; justify-content: space-between; }
 .philosophy-card > .card-kicker, .skill-card > .card-kicker { font-size: 14px; }

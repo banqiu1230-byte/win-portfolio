@@ -706,14 +706,29 @@ function DecodedImage({ src, alt = "", className = "", wrapperClassName = "", lo
 
 function DownloadLink({ href, fileName, className = "", children, ariaLabel }) {
   const [status, setStatus] = useState("idle");
-  const resetTimerRef = useRef(null);
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const feedbackTimerRef = useRef(null);
+  const statusTimerRef = useRef(null);
 
-  useEffect(() => () => window.clearTimeout(resetTimerRef.current), []);
+  useEffect(() => () => {
+    window.clearTimeout(feedbackTimerRef.current);
+    window.clearTimeout(statusTimerRef.current);
+  }, []);
+
+  function showFeedbackFor(duration = 3000) {
+    window.clearTimeout(feedbackTimerRef.current);
+    setFeedbackVisible(true);
+    feedbackTimerRef.current = window.setTimeout(() => setFeedbackVisible(false), duration);
+  }
 
   async function handleDownload(event) {
     event.preventDefault();
-    if (status === "loading") return;
+    if (status === "loading") {
+      showFeedbackFor();
+      return;
+    }
     setStatus("loading");
+    showFeedbackFor();
 
     try {
       const response = await fetch(assetUrl(href));
@@ -728,16 +743,18 @@ function DownloadLink({ href, fileName, className = "", children, ariaLabel }) {
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
       setStatus("success");
+      showFeedbackFor(2600);
     } catch {
       setStatus("error");
+      showFeedbackFor(2600);
     }
 
-    window.clearTimeout(resetTimerRef.current);
-    resetTimerRef.current = window.setTimeout(() => setStatus("idle"), 2600);
+    window.clearTimeout(statusTimerRef.current);
+    statusTimerRef.current = window.setTimeout(() => setStatus("idle"), 2600);
   }
 
   const feedback = status === "loading"
-    ? "正在准备下载…"
+    ? "简历/作品集资源正在加载中，请稍后再试"
     : status === "success"
       ? "下载已开始"
       : status === "error"
@@ -754,7 +771,7 @@ function DownloadLink({ href, fileName, className = "", children, ariaLabel }) {
       aria-busy={status === "loading"}
     >
       {children}
-      {feedback ? <span className={`download-feedback is-${status}`} role="status">{feedback}</span> : null}
+      {feedback && feedbackVisible ? <span className={`download-feedback is-${status}`} role="status">{feedback}</span> : null}
     </a>
   );
 }
