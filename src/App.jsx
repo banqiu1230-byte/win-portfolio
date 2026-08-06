@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+import { figmaProjectContent } from "./figmaContent";
 
 const assetUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 
@@ -10,7 +11,7 @@ const filters = [
   ["resume", "简历"],
 ];
 
-const projects = [
+const projectDrafts = [
   {
     id: "temu",
     category: "work",
@@ -31,70 +32,70 @@ const projects = [
         title: "难点不在页面数量，而在规则、状态和任务高度复杂。",
         body: "不同订单状态对应不同售后方式，也对应多入口、多流程、多结果页与异常分支。用户需要知道下一步做什么，团队则需要保证多人协作后的输出一致。",
         points: ["页面多：多入口、多流程、多结果页", "状态多：待处理、处理中、已完成与异常中", "任务多：打印 Label、Drop off、Pick up 与补充信息", "异常多：错货、缺货、物流失败、超时与退款失败", "协作多：产品、交互、开发、客服与多位设计师共同参与"],
-        image: "/assets/temu-system-overview.png",
+        image: "/assets/temu-01-business-objectives.png",
       },
       {
         eyebrow: "组织职责",
         title: "把个人判断转化为多人协作的设计质量闭环。",
         body: "作为售后 UI 负责人，我不仅完成页面设计，也负责检查视觉层级、组件使用、状态表达和场景完整性，并将这些判断沉淀为可执行的协作规则。",
         points: ["需求理解与设计输出", "UI 审核", "交付规则", "验收还原", "体验走查", "排期优化"],
-        image: "/assets/temu-role-map.png",
+        image: "/assets/temu-12-standards-collaboration.png",
       },
       {
         eyebrow: "长期建设",
         title: "用小步、持续的走查机制保证线上体验。",
         body: "定期组织设计师进行一小时体验走查，把页面问题、信息问题和链路问题分配到人。每周每个人可能只处理一至两个小修改，但长期累积形成稳定的体验改进。",
         points: ["建立问题记录与负责人机制", "覆盖不同机型、弱网、大字体和异常状态", "由设计验收并推动产品与开发排期", "让体验问题可以持续被发现、追踪和解决"],
-        image: "/assets/temu-role-map.png",
+        image: "/assets/temu-12-standards-collaboration.png",
       },
       {
         eyebrow: "核心任务",
         title: "把复杂规则转译为用户可理解、可执行的界面。",
         body: "多状态、多任务和异常分支不应直接暴露给用户。设计需要把规则重新组织为清晰的信息层级、及时的状态反馈、明确的操作引导和可靠的兜底方案。",
         points: ["复杂规则 → 信息层级", "多状态 → 状态反馈", "多任务 → 操作引导", "异常分支 → 兜底方案"],
-        image: "/assets/temu-system-overview.png",
+        image: "/assets/temu-03-return-complexity.png",
       },
       {
         eyebrow: "问题分析",
         title: "退货寄出前的信息混乱，已经引发用户客诉。",
         body: "原页面信息堆叠、步骤不清，用户容易漏看打包、Label 和寄出要求。问题并非用户不知道要退货，而是不知道下一步做什么、先做什么，以及做错会有什么后果。",
         points: ["第一屏没有露出需要打包的商品", "步骤信息层级不清", "Label 使用规则不清楚", "关键信息强调不足", "操作按钮不明显", "打包信息和打印信息关联弱"],
-        image: "/assets/temu-page-before-after.png",
+        image: "/assets/temu-06-issue-diagnosis.png",
       },
       {
         eyebrow: "业务理解",
         title: "退货不是一个页面问题，而是一组连续任务。",
         body: "设计目标是把阅读型说明改造成执行型任务流程，让用户按顺序完成确认商品、打包、打印 Label、正确贴 Label 和寄出包裹。",
         points: ["确认退货商品：避免漏寄、错寄", "打包商品：所有商品放入一个包裹，并带有对应 Barcode", "打印 Label：一个 Label 只能使用一次", "正确贴 Label：覆盖或撕掉原 Label", "携带包裹去邮寄：提供附近邮寄点入口"],
-        image: "/assets/temu-page-before-after.png",
+        image: "/assets/temu-07-project-understanding.png",
       },
       {
         eyebrow: "设计策略",
         title: "让用户按正确顺序完成退货。",
         body: "页面从说明文档变成任务清单，关键信息贴近当前动作，用户不需要在大段文字中自行寻找下一步。",
         points: ["信息分层：先看下一步，再看补充说明", "任务前置：把关键动作放在用户决策前", "风险提示：在容易出错处提前提醒", "行动闭环：让每一步都有明确完成标准"],
-        image: "/assets/temu-page-before-after.png",
+        image: "/assets/temu-08-design-strategy.png",
       },
       {
         eyebrow: "方案与结果",
         title: "从信息说明转为任务引导，降低理解成本与误操作风险。",
         body: "改版后用户可以清楚知道退什么、怎么打包、如何贴 Label 和去哪里寄出。由于该场景无法直接获取数据，我通过后续反馈验证方案；改版后未再出现同类高频客诉。",
         points: ["对用户：知道下一步做什么，降低退货失败风险", "对业务：减少客服咨询和异常退货成本", "对团队：形成可复用的售后任务型页面方法"],
-        image: "/assets/temu-page-before-after.png",
+        image: "/assets/temu-09-before-after.png",
       },
       {
         eyebrow: "规范沉淀",
         title: "让售后 UI 从零散交付走向稳定建设。",
         body: "补充常用组件、实时更新常用页面，并统一出图规格、需求背景、负责人和时间信息。组件、审核与走查协同后，核心场景的表达更统一，交付更稳定，优化也能持续推进。",
         points: ["常用组件及时补充，保持设计统一", "常用页面实时更新，避免业务变化造成出图错误", "交付信息可追溯，降低状态遗漏和沟通成本", "沉淀售后常用组件与页面模板，减少重复设计"],
-        image: "/assets/temu-system-overview.png",
+        image: "/assets/temu-12-standards-collaboration.png",
       },
       {
         eyebrow: "阶段成果",
         title: "从完成页面，走向一套可以长期运转的售后 UI 建设方式。",
         body: "项目最终沉淀的不只是若干页面，而是覆盖设计、审核、验收和持续优化的协作方式。售后核心场景拥有了更统一的表达、更稳定的交付质量，以及可以持续更新的组件和页面规范。",
         points: ["统一表达：常用组件与页面模板减少同类场景差异", "稳定交付：审核与验收机制降低多人协作中的质量波动", "持续优化：体验走查让线上问题被长期发现、追踪与修正"],
-        image: "/assets/temu-system-overview.png",
+        image: "/assets/temu-13-retrospective.png",
       },
     ],
   },
@@ -299,7 +300,7 @@ const projects = [
   {
     id: "ai",
     category: "work",
-    title: "AI 辅助设计与产品探索",
+    title: "AI设计",
     label: "AI 意识与原型验证",
     period: "2025 — 2026",
     cover: "/assets/cover-ai-workflow.png",
@@ -408,27 +409,109 @@ const projects = [
   },
 ];
 
+const projects = projectDrafts.map((project) => ({
+  ...project,
+  ...figmaProjectContent[project.id],
+}));
+
+const videoCoverProjectIds = new Set(["temu", "redpacket", "ai", "emoji"]);
+
+const aboutIntro = "6 年拼多多 C 端产品设计经验，覆盖跨境电商、社交增长与短视频业务；擅长复杂业务体验、增长转化与设计系统建设。";
+
+const aboutDetailIntro = "C 端与增长体验，擅长流程梳理、规则表达与设计规范建设，让复杂业务更清晰、更易执行。持续探索 AI 设计和 AI 产品实践。";
+
+const aboutSkills = ["UI / 交互设计", "设计系统", "产品思维", "增长设计", "AI 设计", "Vibe Coding"];
+
 const experience = [
-  ["多多视频", "交互 / UI 设计师", "2024 — 2025"],
+  ["多多视频", "高级 UI/UX 设计师", "2024 — 2025"],
   ["TEMU", "C 端售后 UI 负责人", "2022 — 2024"],
-  ["拼小圈", "UI 设计师", "2019 — 2022"],
+  ["拼小圈", "UI/UX 设计师", "2019 — 2022"],
 ];
 
-function runViewTransition(update, type = "page") {
+const aboutExperience = [
+  {
+    company: "多多视频",
+    role: "高级 UI/UX 设计师",
+    period: "2024 — 2025",
+    summary: "团队提效设计规范搭建；自驱消息页体验优化，改版上线后全站活跃时长提升 0.35%，短剧场景总时长提升 0.78%。",
+  },
+  {
+    company: "TEMU",
+    role: "C 端售后 UI 负责人",
+    period: "2022 — 2024",
+    summary: "推动并参与 TEMU 设计团队规范搭建，0→1 参与 C 端售后 UI 体验建设，协同 3 位 UI 设计师，团队协作效率提升约 20%。",
+  },
+  {
+    company: "拼小圈",
+    role: "UI/UX 设计师",
+    period: "2019 — 2022",
+    summary: "参与产品从 0 到 1 建设，主导带货红包和社交互动机制设计，推动红包场景互动与留存增长。",
+  },
+];
+
+const detailIds = new Set(["about", ...projects.map((project) => project.id)]);
+const videoPlaybackTimes = new Map();
+let activeViewTransition = null;
+
+function rememberVideoPosition(video) {
+  const playbackKey = video?.dataset.playbackKey;
+  if (!playbackKey || !Number.isFinite(video.currentTime)) return;
+  videoPlaybackTimes.set(playbackKey, video.currentTime);
+}
+
+function prepareAboutOpen(source) {
+  const sourceCard = document.querySelector(`[data-project-id="about-${source}"]`);
+  if (!sourceCard || typeof document.startViewTransition !== "function") return null;
+
+  const rect = sourceCard.getBoundingClientRect();
+  const snapshot = sourceCard.cloneNode(true);
+  snapshot.removeAttribute("data-project-id");
+  snapshot.removeAttribute("aria-label");
+  snapshot.querySelector(".about-card-surface")?.remove();
+  snapshot.querySelector(".intro-open-icon")?.remove();
+  snapshot.classList.add("about-open-snapshot");
+  snapshot.style.left = `${rect.left}px`;
+  snapshot.style.top = `${rect.top}px`;
+  snapshot.style.width = `${rect.width}px`;
+  snapshot.style.height = `${rect.height}px`;
+  snapshot.style.viewTransitionName = "project-content-about";
+  document.body.append(snapshot);
+  snapshot.getBoundingClientRect();
+  return snapshot;
+}
+
+async function runViewTransition(update, type = "page") {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const root = document.documentElement;
-  root.dataset.viewTransition = type;
-
-  const finish = (promise) => promise.finally(() => {
-    if (root.dataset.viewTransition === type) delete root.dataset.viewTransition;
-  });
 
   if (typeof document.startViewTransition !== "function" || reduceMotion) {
     flushSync(update);
-    return finish(Promise.resolve());
+    return;
   }
 
-  return finish(document.startViewTransition(() => flushSync(update)).finished.catch(() => {}));
+  if (activeViewTransition) {
+    activeViewTransition.skipTransition();
+    await activeViewTransition.finished.catch(() => {});
+  }
+
+  root.dataset.viewTransition = type;
+  let updateCommitted = false;
+
+  try {
+    const transition = document.startViewTransition(() => {
+      updateCommitted = true;
+      flushSync(update);
+    });
+    activeViewTransition = transition;
+    await transition.finished.catch(() => {});
+  } catch (_) {
+    // A fast second click can race the browser's View Transition teardown.
+    // Keep navigation reliable even when the native transition cannot start.
+    if (!updateCommitted) flushSync(update);
+  } finally {
+    activeViewTransition = null;
+    if (root.dataset.viewTransition === type) delete root.dataset.viewTransition;
+  }
 }
 
 function prepareDetailClose(projectId) {
@@ -446,7 +529,7 @@ function prepareDetailClose(projectId) {
 
   return {
     node: snapshot,
-    ready: new Promise((resolve) => requestAnimationFrame(resolve)),
+    ready: new Promise((resolve) => window.requestAnimationFrame(resolve)),
   };
 }
 
@@ -481,6 +564,10 @@ function DownloadIcon() {
 
 function NavArrowIcon({ direction = "next" }) {
   return <svg className={direction === "previous" ? "is-previous" : ""} viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>;
+}
+
+function ZoomIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.5" /><path d="m15 15 4 4M10.5 8v5M8 10.5h5" /></svg>;
 }
 
 async function copyText(value) {
@@ -552,37 +639,42 @@ function ContactModal({ onClose }) {
   );
 }
 
-function VideoCover({ src, poster, className }) {
+function VideoCover({ src, poster, className, playbackKey }) {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
   const [posterReady, setPosterReady] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [playing, setPlaying] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [posterFailed, setPosterFailed] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
 
-  const handlePlaying = () => {
-    const currentVideo = videoRef.current;
-    const videos = [...document.querySelectorAll("video")];
-    const visibleArea = (video) => {
-      const rect = video.getBoundingClientRect();
-      const width = Math.max(0, Math.min(rect.right, innerWidth) - Math.max(rect.left, 0));
-      const height = Math.max(0, Math.min(rect.bottom, innerHeight) - Math.max(rect.top, 0));
-      return width * height;
-    };
-    const activeVideo = videos.reduce((best, video) => (
-      visibleArea(video) > visibleArea(best) ? video : best
-    ), currentVideo);
+  const updateStarted = (nextValue) => {
+    setHasStarted(nextValue);
+  };
 
-    if (activeVideo !== currentVideo) {
-      currentVideo.pause();
-      activeVideo.play().catch(() => {});
+  const revealRenderedFrame = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (typeof video.requestVideoFrameCallback === "function") {
+      video.requestVideoFrameCallback(() => updateStarted(true));
       return;
     }
 
-    videos.forEach((video) => {
-      if (video !== currentVideo) video.pause();
-    });
-    setPlaying(true);
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      updateStarted(true);
+    }
+  };
+
+  const restorePlaybackPosition = () => {
+    const video = videoRef.current;
+    const savedTime = videoPlaybackTimes.get(playbackKey);
+    if (!video || !Number.isFinite(savedTime) || savedTime <= 0) return;
+    const targetTime = Number.isFinite(video.duration) && video.duration > 0
+      ? savedTime % video.duration
+      : savedTime;
+    if (Math.abs(video.currentTime - targetTime) > 0.08) video.currentTime = targetTime;
   };
 
   useEffect(() => {
@@ -596,12 +688,15 @@ function VideoCover({ src, poster, className }) {
     }
 
     const preloadObserver = new IntersectionObserver(([entry]) => {
-      setShouldLoad(entry.isIntersecting);
+      if (entry.isIntersecting) {
+        setShouldLoad(true);
+        preloadObserver.unobserve(container);
+      }
     }, { rootMargin: "320px 0px" });
 
     const playbackObserver = new IntersectionObserver(([entry]) => {
-      setIsVisible(entry.isIntersecting && entry.intersectionRatio >= 0.28);
-    }, { threshold: [0, 0.28, 0.6] });
+      setIsVisible(entry.isIntersecting && entry.intersectionRatio >= 0.12);
+    }, { threshold: [0, 0.12] });
 
     preloadObserver.observe(container);
     playbackObserver.observe(container);
@@ -614,39 +709,51 @@ function VideoCover({ src, poster, className }) {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !shouldLoad) return undefined;
-
-    setPlaying(false);
+    if (!video) return undefined;
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const syncPlayback = () => {
-      if (!isVisible || document.hidden) {
+      if (motionPreference.matches) {
         video.pause();
-        setPlaying(false);
-        return;
+      } else if (isVisible && !document.hidden) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
       }
-
-      const playRequest = video.play();
-      if (playRequest) playRequest.catch(() => setPlaying(false));
     };
 
     syncPlayback();
     document.addEventListener("visibilitychange", syncPlayback);
-
+    motionPreference.addEventListener("change", syncPlayback);
     return () => {
       document.removeEventListener("visibilitychange", syncPlayback);
+      motionPreference.removeEventListener("change", syncPlayback);
+      rememberVideoPosition(video);
       video.pause();
     };
-  }, [isVisible, shouldLoad, src]);
+  }, [isVisible, shouldLoad, src, playbackKey]);
 
   return (
-    <div ref={containerRef} className={`video-cover${posterReady ? " has-poster" : ""}${playing ? " is-playing" : ""}`}>
+    <div
+      ref={containerRef}
+      className={`video-cover${posterReady ? " has-poster" : ""}${hasStarted ? " has-started" : ""}${posterFailed && videoFailed ? " has-media-error" : ""}`}
+      data-video-owner={playbackKey}
+    >
       <img
         className="video-cover-poster"
         src={assetUrl(poster)}
         alt=""
-        loading="lazy"
+        loading="eager"
+        fetchPriority="high"
         decoding="async"
-        onLoad={() => setPosterReady(true)}
+        onLoad={() => {
+          setPosterReady(true);
+          setPosterFailed(false);
+        }}
+        onError={() => {
+          setPosterReady(false);
+          setPosterFailed(true);
+        }}
       />
       <span className="video-cover-shimmer" />
       {shouldLoad && (
@@ -654,61 +761,94 @@ function VideoCover({ src, poster, className }) {
           ref={videoRef}
           className={className}
           src={assetUrl(src)}
+          poster={assetUrl(poster)}
           muted
           loop
           playsInline
           preload="metadata"
-          onPlaying={handlePlaying}
-          onPause={() => setPlaying(false)}
-          onError={() => setPlaying(false)}
+          data-playback-key={playbackKey}
+          onLoadedMetadata={restorePlaybackPosition}
+          onLoadedData={() => {
+            setVideoFailed(false);
+            revealRenderedFrame();
+          }}
+          onCanPlay={revealRenderedFrame}
+          onPlaying={revealRenderedFrame}
+          onTimeUpdate={() => {
+            rememberVideoPosition(videoRef.current);
+            revealRenderedFrame();
+          }}
+          onPause={() => {
+            rememberVideoPosition(videoRef.current);
+          }}
+          onError={() => {
+            setVideoFailed(true);
+            updateStarted(false);
+          }}
         />
       )}
     </div>
   );
 }
 
-function ProjectCover({ projectId }) {
+function ProjectCover({ projectId, sharedDestination = false }) {
+  if (sharedDestination && videoCoverProjectIds.has(projectId)) {
+    return (
+      <div className={`cover-art cover-${projectId}`} aria-hidden="true">
+        <div className="shared-video-slot" data-shared-video-slot={projectId} />
+      </div>
+    );
+  }
+
   const covers = {
     temu: (
       <VideoCover
         className="cover-temu-video"
         src="/assets/videos/temu-aftersales.mp4?v=8"
         poster="/assets/posters/temu-aftersales-poster.webp"
+        playbackKey="temu"
       />
     ),
     system: (
-      <>
-        <div className="cover-sheet cover-ds-left"><img src={assetUrl("/assets/design-system-standard.jpg")} alt="" loading="lazy" decoding="async" /></div>
-        <div className="cover-sheet cover-ds-center"><img src={assetUrl("/assets/design-system-efficiency.jpg")} alt="" loading="lazy" decoding="async" /></div>
-        <div className="cover-sheet cover-ds-right"><img src={assetUrl("/assets/design-system-handoff.jpg")} alt="" loading="lazy" decoding="async" /></div>
-      </>
+      <img
+        className="cover-system-laptop"
+        src={assetUrl("/assets/design-system-laptop.png")}
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
     ),
     redpacket: (
       <VideoCover
         className="cover-redpacket-video"
-        src="/assets/videos/redpacket.mp4"
-        poster="/assets/posters/redpacket-first-frame.webp"
+        src="/assets/videos/redpacket.mp4?v=4"
+        poster="/assets/posters/redpacket-first-frame.jpg?v=2"
+        playbackKey="redpacket"
       />
     ),
     message: (
-      <>
-        <div className="cover-sheet cover-message-before"><img src={assetUrl("/assets/message-system.png")} alt="" loading="lazy" decoding="async" /></div>
-        <div className="cover-sheet cover-message-after"><img src={assetUrl("/assets/message-system-overview.jpg")} alt="" loading="lazy" decoding="async" /></div>
-        <div className="cover-status-dot" />
-      </>
+      <img
+        className="cover-message-phones"
+        src={assetUrl("/assets/message-system-phones.png")}
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
     ),
     ai: (
-      <>
-        <div className="cover-sheet cover-ai-main"><img src={assetUrl("/assets/ai-core-experience.jpg")} alt="" loading="lazy" decoding="async" /></div>
-        <div className="cover-sheet cover-ai-dark"><img src={assetUrl("/assets/ai-product-exploration.jpg")} alt="" loading="lazy" decoding="async" /></div>
-        <div className="cover-sheet cover-ai-flow"><img src={assetUrl("/assets/ai-mainline.jpg")} alt="" loading="lazy" decoding="async" /></div>
-      </>
+      <VideoCover
+        className="cover-ai-video"
+        src="/assets/videos/ai-dream-car.mp4"
+        poster="/assets/posters/ai-dream-car-fallback.png"
+        playbackKey="ai"
+      />
     ),
     emoji: (
       <VideoCover
         className="cover-emoji-video"
-        src="/assets/videos/emoji.mp4"
-        poster="/assets/posters/emoji-last-frame.webp"
+        src="/assets/videos/emoji-222.mp4"
+        poster="/assets/posters/emoji-222-last-frame.png"
+        playbackKey="emoji"
       />
     ),
   };
@@ -783,16 +923,206 @@ function DownloadCard({ type, title, meta, href, fileName, wide = false }) {
   );
 }
 
+function getSectionImages(section) {
+  return section.images || (section.image ? [section.image] : []);
+}
+
+const emojiCardImages = Array.from(
+  { length: 15 },
+  (_, index) => `/assets/emoji-cards/emoji-card-${String(index + 1).padStart(2, "0")}.png?v=20260802-2`,
+);
+
+function EmojiMarquee() {
+  const rows = [
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 2, 6, 10, 14, 4, 8, 12, 1, 5]
+      .map((index) => emojiCardImages[index]),
+    [8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 0, 4, 9, 1, 13, 5, 10, 2, 14, 6, 11]
+      .map((index) => emojiCardImages[index]),
+  ];
+
+  return (
+    <div className="emoji-marquee" aria-hidden="true">
+      {rows.map((cards, rowIndex) => (
+        <div className={`emoji-marquee-row${rowIndex === 1 ? " is-reverse" : ""}`} key={rowIndex}>
+          <div className="emoji-marquee-track">
+            {[0, 1].map((copyIndex) => (
+              <div className="emoji-marquee-group" aria-hidden={copyIndex === 1 ? "true" : undefined} key={copyIndex}>
+                {cards.map((image, cardIndex) => (
+                  <img
+                    className="emoji-marquee-card"
+                    src={assetUrl(image)}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    key={`${copyIndex}-${cardIndex}-${image}`}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Detail({ project, previousProject, nextProject, transitioning, onClose, onNavigate }) {
   const panelRef = useRef(null);
   const layerRef = useRef(null);
+  const lightboxRef = useRef(null);
+  const lightboxCloseRef = useRef(null);
+  const lightboxImageRef = useRef(null);
+  const lightboxDragRef = useRef(null);
+  const lastImageTriggerRef = useRef(null);
   const [showBackTop, setShowBackTop] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(null);
+  const [lightboxView, setLightboxView] = useState({ scale: 1, x: 0, y: 0 });
+  const [isDraggingLightbox, setIsDraggingLightbox] = useState(false);
+  const galleryItems = useMemo(() => project.sections.flatMap((section, sectionIndex) => (
+    getSectionImages(section).map((image, imageIndex) => ({ ...section, image, sectionIndex, imageIndex }))
+  )), [project.sections]);
+  const activeSection = activeImageIndex === null ? null : galleryItems[activeImageIndex];
+
+  useLayoutEffect(() => {
+    if (!videoCoverProjectIds.has(project.id)) return undefined;
+
+    const detailSlot = panelRef.current?.querySelector(`[data-shared-video-slot="${project.id}"]`);
+    const videoCover = document.querySelector(`[data-video-owner="${project.id}"]`);
+    if (!detailSlot || !videoCover) return undefined;
+
+    detailSlot.appendChild(videoCover);
+
+    return () => {
+      const homeHost = document.querySelector(`[data-project-id="${project.id}"] .cover-art`);
+      if (homeHost?.isConnected) homeHost.appendChild(videoCover);
+    };
+  }, [project.id]);
 
   useLayoutEffect(() => {
     layerRef.current?.scrollTo({ top: 0, behavior: "instant" });
     setShowBackTop(false);
+    setActiveImageIndex(null);
     panelRef.current?.focus({ preventScroll: true });
   }, [project.id]);
+
+  useEffect(() => {
+    const lightbox = lightboxRef.current;
+    if (!lightbox) return;
+
+    setLightboxView({ scale: 1, x: 0, y: 0 });
+    setIsDraggingLightbox(false);
+    lightboxDragRef.current = null;
+
+    if (activeImageIndex !== null && !lightbox.open) {
+      lightbox.showModal();
+      lightboxCloseRef.current?.focus({ preventScroll: true });
+    } else if (activeImageIndex === null && lightbox.open) {
+      lightbox.close();
+    }
+  }, [activeImageIndex]);
+
+  function openLightbox(index, trigger) {
+    lastImageTriggerRef.current = trigger;
+    setActiveImageIndex(index);
+  }
+
+  function closeLightbox() {
+    setActiveImageIndex(null);
+    window.requestAnimationFrame(() => lastImageTriggerRef.current?.focus({ preventScroll: true }));
+  }
+
+  function navigateLightbox(direction) {
+    setActiveImageIndex((current) => {
+      if (current === null) return current;
+      return Math.min(Math.max(current + direction, 0), galleryItems.length - 1);
+    });
+  }
+
+  function clampLightboxPan(x, y, scale) {
+    const image = lightboxImageRef.current;
+    if (!image || scale <= 1) return { x: 0, y: 0 };
+    const maxX = image.clientWidth * (scale - 1) / 2;
+    const maxY = image.clientHeight * (scale - 1) / 2;
+    return {
+      x: Math.min(Math.max(x, -maxX), maxX),
+      y: Math.min(Math.max(y, -maxY), maxY),
+    };
+  }
+
+  function handleLightboxWheel(event) {
+    event.preventDefault();
+    const image = lightboxImageRef.current;
+    if (!image) return;
+    const rect = image.getBoundingClientRect();
+
+    setLightboxView((current) => {
+      const nextScale = Math.min(4, Math.max(1, current.scale * Math.exp(-event.deltaY * 0.0015)));
+      if (Math.abs(nextScale - current.scale) < 0.001) return current;
+      if (nextScale === 1) return { scale: 1, x: 0, y: 0 };
+
+      const baseCenterX = rect.left + rect.width / 2 - current.x;
+      const baseCenterY = rect.top + rect.height / 2 - current.y;
+      const localX = (event.clientX - baseCenterX - current.x) / current.scale;
+      const localY = (event.clientY - baseCenterY - current.y) / current.scale;
+      const pan = clampLightboxPan(
+        event.clientX - baseCenterX - nextScale * localX,
+        event.clientY - baseCenterY - nextScale * localY,
+        nextScale,
+      );
+
+      return { scale: nextScale, ...pan };
+    });
+  }
+
+  function startLightboxDrag(event) {
+    if (lightboxView.scale <= 1) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    lightboxDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: lightboxView.x,
+      originY: lightboxView.y,
+    };
+    setIsDraggingLightbox(true);
+  }
+
+  function moveLightboxDrag(event) {
+    const drag = lightboxDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    const pan = clampLightboxPan(
+      drag.originX + event.clientX - drag.startX,
+      drag.originY + event.clientY - drag.startY,
+      lightboxView.scale,
+    );
+    setLightboxView((current) => ({ ...current, ...pan }));
+  }
+
+  function endLightboxDrag(event) {
+    const drag = lightboxDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    lightboxDragRef.current = null;
+    setIsDraggingLightbox(false);
+  }
+
+  function handleLightboxKeyDown(event) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      closeLightbox();
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      navigateLightbox(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      navigateLightbox(1);
+    }
+  }
 
   return (
     <div
@@ -801,7 +1131,7 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
       onScroll={(event) => setShowBackTop(event.currentTarget.scrollTop > Math.max(520, window.innerHeight * 0.65))}
       role="dialog"
       aria-modal="true"
-      aria-label={`${project.title}项目详情`}
+      aria-label={`${project.detailTitle || project.title}项目详情`}
     >
       <div
         className="detail-backdrop"
@@ -810,41 +1140,72 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
       />
       <button className="detail-close" onClick={onClose} aria-label="关闭项目详情"><CloseIcon /></button>
       <button className={`detail-back-top${showBackTop ? " is-visible" : ""}`} onClick={() => layerRef.current?.scrollTo({ top: 0, behavior: "smooth" })} aria-label="返回详情页顶部" tabIndex={showBackTop ? 0 : -1}>↑</button>
-      <article className="detail-page" tabIndex="-1" ref={panelRef}>
+      <article className={`detail-page tone-${project.tone}`} data-project-id={project.id} tabIndex="-1" ref={panelRef}>
         <header
-          className={`detail-hero tone-${project.tone}`}
+          className={`detail-hero tone-${project.tone}${videoCoverProjectIds.has(project.id) ? ` has-video-cover video-ratio-${project.id}` : ""}`}
           style={{ viewTransitionName: `project-cover-${project.id}` }}
         >
-          <ProjectCover projectId={project.id} />
+          <ProjectCover projectId={project.id} sharedDestination />
         </header>
         <section className="detail-intro">
-          <span className="detail-index">{project.period} · {project.label}</span>
-          <h1>{project.title}</h1>
+          <span className="detail-index">{project.period} · {project.detailLabel || project.label}</span>
+          <h1>{project.detailTitle || project.title}</h1>
           <p className="detail-lead">{project.summary}</p>
           <div className="detail-meta">
             <div><span>我的角色</span><strong>{project.role}</strong></div>
             <div><span>项目结果</span><strong>{project.outcome}</strong></div>
           </div>
-          <div className="stat-row">
-            {project.stats.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
-          </div>
+          {project.stats.length ? (
+            <div className="stat-row">
+              {project.stats.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
+            </div>
+          ) : null}
         </section>
         <div className="detail-sections">
-          {project.sections.map((section, index) => (
-            <section className="case-section" key={section.title}>
-              <div className="case-copy">
-                <span>{String(index + 1).padStart(2, "0")} · {section.eyebrow}</span>
-                <h2>{section.title}</h2>
-                <p>{section.body}</p>
-                {section.points?.length ? (
-                  <ul className="case-points">
-                    {section.points.map((point) => <li key={point}>{point}</li>)}
-                  </ul>
+          {project.sections.map((section, index) => {
+            const sectionImages = getSectionImages(section);
+            return (
+              <section className="case-section" key={section.title}>
+                <div className="case-copy">
+                  <span>{String(index + 1).padStart(2, "0")} · {section.eyebrow}</span>
+                  <h2>{section.title}</h2>
+                  <p>{section.body}</p>
+                  {section.points?.length ? (
+                    <ul className="case-points">
+                      {section.points.map((point) => <li key={point}>{point}</li>)}
+                    </ul>
+                  ) : null}
+                  {section.link ? (
+                    <a className="case-link" href={section.link.href} target="_blank" rel="noreferrer">
+                      {section.link.label}<ArrowIcon />
+                    </a>
+                  ) : null}
+                </div>
+                {section.emojiMarquee ? <EmojiMarquee /> : null}
+                {sectionImages.length ? (
+                  <div className={`case-images${section.imageLayout ? ` is-${section.imageLayout}` : ""}`}>
+                    {sectionImages.map((image, imageIndex) => {
+                      const galleryIndex = galleryItems.findIndex((item) => item.sectionIndex === index && item.imageIndex === imageIndex);
+                      return (
+                        <figure key={image}>
+                          <button
+                            className="case-image-button"
+                            type="button"
+                            onClick={(event) => openLightbox(galleryIndex, event.currentTarget)}
+                            aria-label={`放大查看：${section.title}${sectionImages.length > 1 ? `（${imageIndex + 1}）` : ""}`}
+                          >
+                            <img src={assetUrl(image)} alt={`${project.detailTitle || project.title}：${section.eyebrow}`} loading="lazy" decoding="async" />
+                            {section.imageLabel && imageIndex === 0 ? <span className="case-image-label">{section.imageLabel}</span> : null}
+                            <span className="case-image-zoom" aria-hidden="true"><ZoomIcon /></span>
+                          </button>
+                        </figure>
+                      );
+                    })}
+                  </div>
                 ) : null}
-              </div>
-              <figure><img src={assetUrl(section.image)} alt={`${project.title}：${section.eyebrow}`} loading="lazy" decoding="async" /></figure>
-            </section>
-          ))}
+              </section>
+            );
+          })}
         </div>
         <footer className="detail-footer">
           <button className="detail-project-link is-previous" onClick={() => onNavigate(previousProject.id)}>
@@ -857,6 +1218,202 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
           </button>
         </footer>
       </article>
+      <dialog
+        className="image-lightbox"
+        ref={lightboxRef}
+        aria-label={activeSection ? `大图查看：${activeSection.title}` : "大图查看"}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) closeLightbox();
+        }}
+        onCancel={(event) => {
+          event.preventDefault();
+          closeLightbox();
+        }}
+        onKeyDown={handleLightboxKeyDown}
+      >
+        {activeSection ? (
+          <div className={`image-lightbox-content${lightboxView.scale > 1 ? " is-zoomed" : ""}${isDraggingLightbox ? " is-dragging" : ""}`}>
+            <button className="image-lightbox-close" ref={lightboxCloseRef} type="button" onClick={closeLightbox} aria-label="关闭大图"><CloseIcon /></button>
+            <img
+              ref={lightboxImageRef}
+              src={assetUrl(activeSection.image)}
+              alt={`${project.title}：${activeSection.eyebrow}`}
+              draggable={false}
+              onWheel={handleLightboxWheel}
+              onPointerDown={startLightboxDrag}
+              onPointerMove={moveLightboxDrag}
+              onPointerUp={endLightboxDrag}
+              onPointerCancel={endLightboxDrag}
+              onDoubleClick={() => setLightboxView({ scale: 1, x: 0, y: 0 })}
+              style={{ transform: `translate3d(${lightboxView.x}px, ${lightboxView.y}px, 0) scale(${lightboxView.scale})` }}
+            />
+            <button
+              className="image-lightbox-nav is-previous"
+              type="button"
+              onClick={() => navigateLightbox(-1)}
+              disabled={activeImageIndex === 0}
+              aria-label="查看上一张图片"
+            >
+              <NavArrowIcon direction="previous" />
+            </button>
+            <button
+              className="image-lightbox-nav is-next"
+              type="button"
+              onClick={() => navigateLightbox(1)}
+              disabled={activeImageIndex === galleryItems.length - 1}
+              aria-label="查看下一张图片"
+            >
+              <NavArrowIcon />
+            </button>
+            <div className="image-lightbox-caption" aria-live="polite">
+              <span>{String(activeImageIndex + 1).padStart(2, "0")} / {String(galleryItems.length).padStart(2, "0")}</span>
+              <strong>{activeSection.eyebrow}</strong>
+              <span>{Math.round(lightboxView.scale * 100)}%</span>
+            </div>
+          </div>
+        ) : null}
+      </dialog>
+    </div>
+  );
+}
+
+function AboutDetail({ transitioning, source, onClose }) {
+  const panelRef = useRef(null);
+  const layerRef = useRef(null);
+  const [showBackTop, setShowBackTop] = useState(false);
+  const [copiedContact, setCopiedContact] = useState(null);
+
+  useLayoutEffect(() => {
+    layerRef.current?.scrollTo({ top: 0, behavior: "instant" });
+    panelRef.current?.focus({ preventScroll: true });
+  }, []);
+
+  async function handleContactCopy(label, value) {
+    await copyText(value);
+    setCopiedContact(label);
+    window.setTimeout(() => setCopiedContact((current) => current === label ? null : current), 1600);
+  }
+
+  return (
+    <div
+      className={`detail-layer about-detail-layer${transitioning ? " is-transitioning" : ""}`}
+      ref={layerRef}
+      onScroll={(event) => setShowBackTop(event.currentTarget.scrollTop > Math.max(520, window.innerHeight * 0.65))}
+      role="dialog"
+      aria-modal="true"
+      aria-label="关于张文"
+    >
+      <div className="detail-backdrop" style={{ viewTransitionName: "project-shell-about" }} aria-hidden="true" />
+      <button className="detail-close" onClick={onClose} aria-label="关闭关于我"><CloseIcon /></button>
+      <button className={`detail-back-top${showBackTop ? " is-visible" : ""}`} onClick={() => layerRef.current?.scrollTo({ top: 0, behavior: "smooth" })} aria-label="返回关于页顶部" tabIndex={showBackTop ? 0 : -1}>↑</button>
+
+      <article className="about-detail-page" tabIndex="-1" ref={panelRef}>
+        <div className="about-detail-bento">
+          <article
+            className={`card intro-card about-profile-card${source === "intro" ? " about-transition-target" : ""}`}
+            style={{ viewTransitionName: transitioning && source === "intro" ? "project-content-about" : "none" }}
+          >
+            <img className="avatar" src={assetUrl("/assets/avatar.webp")} alt="张文头像" width="720" height="720" decoding="async" />
+            <div>
+              <span className="card-kicker">UI/UX 设计师</span>
+              <h1>你好，我是张文👋</h1>
+              <p>{aboutDetailIntro}</p>
+              <div className="about-profile-meta" aria-label="个人信息"><span>1996 年出生</span></div>
+            </div>
+          </article>
+
+          <article className="card about-education-card about-detail-card">
+            <span className="card-kicker">教育背景</span>
+            <div>
+              <h2>西安交通大学</h2>
+              <p>视觉传达设计 · 本科</p>
+            </div>
+          </article>
+
+          <article
+            className={`card experience-card about-detail-experience${source === "experience" ? " about-transition-target" : ""}`}
+            style={{ viewTransitionName: transitioning && source === "experience" ? "project-content-about" : "none" }}
+          >
+            <div className="section-heading"><span>工作经历</span><strong>6 年</strong></div>
+            <div className="about-experience-list">
+              {aboutExperience.map(({ company, role, period, summary }) => (
+                <div className="about-experience-row" key={company}>
+                  <div className="about-experience-meta"><strong>{company}</strong><time>{period}</time></div>
+                  <div><strong>{role}</strong><p>{summary}</p></div>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article
+            className={`card skill-card about-detail-skills${source === "skills" ? " about-transition-target" : ""}`}
+            style={{ viewTransitionName: transitioning && source === "skills" ? "project-content-about" : "none" }}
+          >
+            <span className="card-kicker">核心能力</span>
+            <div className="skill-cloud">{aboutSkills.map((skill) => <span key={skill}>{skill}</span>)}</div>
+          </article>
+
+          <article className="card about-workflow-card about-detail-card">
+            <span className="card-kicker">工作方式</span>
+            <div className="about-workflow-list">
+              <div><span>01</span><strong>需求理解</strong><p>梳理业务目标、用户场景与问题约束。</p></div>
+              <div><span>02</span><strong>方案判断</strong><p>明确优先级、交互路径与视觉表达。</p></div>
+              <div><span>03</span><strong>设计交付</strong><p>完成方案、规范、评审与开发对齐。</p></div>
+              <div><span>04</span><strong>验证迭代</strong><p>结合数据、走查与反馈持续优化。</p></div>
+            </div>
+          </article>
+
+          <article className="card about-performance-card about-detail-card">
+            <span className="card-kicker">绩效记录</span>
+            <div><strong>5 次优评</strong><p>参与 9 次绩效评审</p></div>
+          </article>
+
+          <article className="card about-tools-card about-detail-card">
+            <span className="card-kicker">设计与 AI 工具</span>
+            <div className="skill-cloud"><span>Figma</span><span>Sketch</span><span>ChatGPT</span><span>Codex</span></div>
+          </article>
+
+          <section className="card about-detail-contact-card about-detail-card">
+            <span className="card-kicker about-contact-kicker">联系方式</span>
+            <div className="about-contact-details">
+              {[
+                ["微信", "KISS_WIN", null],
+                ["电话", "13772150131", "tel:13772150131"],
+                ["邮箱", "banqiu1230@gmail.com", "mailto:banqiu1230@gmail.com"],
+              ].map(([label, value, href]) => (
+                <div key={label}>
+                  <span>{label}</span>
+                  {href ? <a href={href}>{value}</a> : <strong>{value}</strong>}
+                  <button
+                    type="button"
+                    className={copiedContact === label ? "is-copied" : ""}
+                    onClick={() => handleContactCopy(label, value)}
+                    aria-label={copiedContact === label ? `${label}已复制` : `复制${label}`}
+                    title={copiedContact === label ? "已复制" : `复制${label}`}
+                  >
+                    {copiedContact === label ? <CheckIcon /> : <CopyIcon />}
+                    <span>{copiedContact === label ? "已复制" : "复制"}</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <article className="card about-downloads-card about-detail-card">
+            <span className="card-kicker">下载资料</span>
+            <div className="about-download-list">
+              <a href={assetUrl("/assets/wen-zhang-resume.pdf")} download="张文_UIUX_简历.pdf">
+                <span><small>PDF · 346 KB</small><strong>个人简历</strong></span>
+                <DownloadIcon />
+              </a>
+              <a href={assetUrl("/assets/wen-zhang-portfolio.pdf")} download="张文_UIUX_作品集.pdf">
+                <span><small>PDF · 17 MB</small><strong>作品集</strong></span>
+                <DownloadIcon />
+              </a>
+            </div>
+          </article>
+        </div>
+      </article>
     </div>
   );
 }
@@ -864,12 +1421,20 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
 export function App() {
   const initialHash = window.location.hash.match(/^#project\/(.+)$/)?.[1];
   const [filter, setFilter] = useState("all");
-  const [activeId, setActiveId] = useState(projects.some((p) => p.id === initialHash) ? initialHash : null);
+  const [activeId, setActiveId] = useState(detailIds.has(initialHash) ? initialHash : null);
   const [transitioningId, setTransitioningId] = useState(null);
+  const [aboutSource, setAboutSource] = useState("intro");
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || "light");
   const [contactOpen, setContactOpen] = useState(false);
   const [showBackTop, setShowBackTop] = useState(false);
+  const transitionRun = useRef(0);
   const scrollPosition = useRef(0);
+
+  function finishTransition(promise, runId) {
+    return promise.finally(() => {
+      if (transitionRun.current === runId) setTransitioningId(null);
+    });
+  }
   const gridRef = useRef(null);
 
   const visibleProjects = useMemo(() => {
@@ -904,19 +1469,20 @@ export function App() {
   useEffect(() => {
     const onPopState = async () => {
       const id = window.location.hash.match(/^#project\/(.+)$/)?.[1];
-      const nextId = projects.some((p) => p.id === id) ? id : null;
+      const nextId = detailIds.has(id) ? id : null;
       if (nextId && !activeId) scrollPosition.current = window.scrollY;
       const transitionId = activeId || nextId;
       const closeSnapshot = !nextId && activeId ? prepareDetailClose(activeId) : null;
       if (closeSnapshot) await closeSnapshot.ready;
       if (transitionId) flushSync(() => setTransitioningId(transitionId));
-      runViewTransition(() => {
+      const runId = ++transitionRun.current;
+      finishTransition(runViewTransition(() => {
         closeSnapshot?.node.remove();
         setActiveId(nextId);
-      }, nextId ? "detail-open" : "detail-close").finally(() => setTransitioningId(null));
+      }, nextId ? "detail-open" : "detail-close"), runId);
     };
     const onKeyDown = (event) => {
-      if (event.key === "Escape" && activeId) closeProject();
+      if (event.key === "Escape" && activeId && !document.querySelector(".image-lightbox[open]")) closeProject();
     };
     window.addEventListener("popstate", onPopState);
     window.addEventListener("keydown", onKeyDown);
@@ -950,31 +1516,50 @@ export function App() {
     };
   }, [activeId]);
 
-  function openProject(id) {
+  function openProject(id, source = null) {
     scrollPosition.current = window.scrollY;
-    flushSync(() => setTransitioningId(id));
+    const runId = ++transitionRun.current;
+    const aboutSnapshot = id === "about" && source ? prepareAboutOpen(source) : null;
+    const projectCard = id !== "about" ? document.querySelector(`[data-project-id="${id}"]`) : null;
+    rememberVideoPosition(projectCard?.querySelector("video"));
+    flushSync(() => {
+      setTransitioningId(id);
+      if (id === "about" && source) setAboutSource(source);
+    });
+
+    // Commit the source card's shared-element names before asking the browser
+    // to capture the old frame. This prevents an in-flight media update or a
+    // stale transition callback from intermittently dropping the source.
+    const sourceCardId = id === "about" && source ? `about-${source}` : id;
+    const sourceCard = document.querySelector(`[data-project-id="${sourceCardId}"]`);
+    sourceCard?.getBoundingClientRect();
+
     window.history.pushState({ project: id }, "", `#project/${id}`);
-    runViewTransition(() => {
+    finishTransition(runViewTransition(() => {
+      aboutSnapshot?.remove();
       setActiveId(id);
-    }, "detail-open").finally(() => setTransitioningId(null));
+    }, "detail-open"), runId);
   }
 
   async function closeProject() {
     const closingId = activeId;
+    rememberVideoPosition(document.querySelector(".detail-layer video"));
+    const runId = ++transitionRun.current;
     const closeSnapshot = prepareDetailClose(closingId);
     if (closeSnapshot) await closeSnapshot.ready;
     flushSync(() => setTransitioningId(closingId));
     if (window.location.hash.startsWith("#project/")) {
       window.history.replaceState({}, "", window.location.pathname + window.location.search);
     }
-    runViewTransition(() => {
+    finishTransition(runViewTransition(() => {
       closeSnapshot?.node.remove();
       setActiveId(null);
-    }, "detail-close").finally(() => setTransitioningId(null));
+    }, "detail-close"), runId);
   }
 
   function navigateProject(id) {
     if (id === activeId) return;
+    rememberVideoPosition(document.querySelector(".detail-layer video"));
     window.history.pushState({ project: id }, "", `#project/${id}`);
     runViewTransition(() => {
       setActiveId(id);
@@ -1020,7 +1605,18 @@ export function App() {
   return (
     <>
       <header className="site-header">
-        <a className="mark" href="#top" aria-label="Win 首页">Win</a>
+        <a
+          className="mark"
+          href="#top"
+          aria-label="Win 首页"
+          onClick={(event) => {
+            event.preventDefault();
+            window.history.replaceState(null, "", "#top");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        >
+          Win
+        </a>
         <nav className="filter-nav" aria-label="作品筛选">
           {filters.map(([value, label]) => (
             <button
@@ -1039,10 +1635,22 @@ export function App() {
         <section ref={gridRef} className={`bento-grid filter-${filter}`} aria-live="polite">
           {(filter === "all" || filter === "about") && (
             <>
-              <article className="card intro-card reveal-card">
+              <button
+                className={`card intro-card intro-card-link reveal-card${transitioningId === "about" && activeId !== "about" && aboutSource === "intro" ? " is-transitioning" : ""}`}
+                type="button"
+                onClick={() => openProject("about", "intro")}
+                data-project-id="about-intro"
+                aria-label="打开关于张文的详情"
+              >
+                <span
+                  className="about-card-surface"
+                  style={{ viewTransitionName: transitioningId === "about" && activeId !== "about" && aboutSource === "intro" ? "project-shell-about" : "none" }}
+                  aria-hidden="true"
+                />
                 <img className="avatar" src={assetUrl("/assets/avatar.webp")} alt="张文头像" width="720" height="720" decoding="async" fetchPriority="high" />
-                <div><span className="card-kicker">UI/UX 设计师</span><h1>你好，我是张文👋</h1><p>拥有 6 年 C 端产品经验，参与 TEMU、拼小圈和多多视频等产品建设，专注复杂业务体验、增长设计与设计系统。</p></div>
-              </article>
+                <div><span className="card-kicker">UI/UX 设计师</span><h1>你好，我是张文👋</h1><p>{aboutIntro}</p></div>
+                <span className="intro-open-icon" aria-hidden="true"><ArrowIcon /></span>
+              </button>
               <button
                 className={`card theme-card reveal-card${theme === "dark" ? " is-dark" : ""}`}
                 onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")}
@@ -1052,21 +1660,38 @@ export function App() {
               >
                 <span className="theme-preview" aria-hidden="true" />
               </button>
-              <article className="card experience-card reveal-card">
+              <button
+                className={`card experience-card about-summary-card reveal-card${transitioningId === "about" && activeId !== "about" && aboutSource === "experience" ? " is-transitioning" : ""}`}
+                type="button"
+                onClick={() => openProject("about", "experience")}
+                data-project-id="about-experience"
+                aria-label="打开工作经历详情"
+              >
+                <span
+                  className="about-card-surface"
+                  style={{ viewTransitionName: transitioningId === "about" && activeId !== "about" && aboutSource === "experience" ? "project-shell-about" : "none" }}
+                  aria-hidden="true"
+                />
                 <div className="section-heading"><span>工作经历</span><strong>6 年</strong></div>
                 {experience.map(([company, role, period]) => <div className="experience-row" key={company}><strong>{company}</strong><span>{role}</span><time>{period}</time></div>)}
-              </article>
-              <article className="card skill-card reveal-card">
-                <span className="card-kicker">核心能力</span>
-                <div className="skill-cloud"><span>UI 设计</span><span>增长设计</span><span>数据驱动</span><span>复杂流程</span><span>设计系统</span><span>交互设计</span><span>Vibe Coding</span><span>AI 辅助设计</span></div>
-              </article>
-              <button className="card contact-card reveal-card" onClick={() => setContactOpen(true)} aria-label="打开联系方式" data-tooltip="联系我">
-                <span className="contact-symbol"><ContactIcon /></span>
+                <span className="intro-open-icon" aria-hidden="true"><ArrowIcon /></span>
               </button>
-              <article className="card philosophy-card reveal-card">
-                <span className="card-kicker">设计方向</span>
-                <blockquote>在复杂业务里，建立清晰、可信的体验秩序。</blockquote>
-              </article>
+              <button
+                className={`card skill-card about-summary-card reveal-card${transitioningId === "about" && activeId !== "about" && aboutSource === "skills" ? " is-transitioning" : ""}`}
+                type="button"
+                onClick={() => openProject("about", "skills")}
+                data-project-id="about-skills"
+                aria-label="打开核心能力详情"
+              >
+                <span
+                  className="about-card-surface"
+                  style={{ viewTransitionName: transitioningId === "about" && activeId !== "about" && aboutSource === "skills" ? "project-shell-about" : "none" }}
+                  aria-hidden="true"
+                />
+                <span className="card-kicker">核心能力</span>
+                <div className="skill-cloud">{aboutSkills.map((skill) => <span key={skill}>{skill}</span>)}</div>
+                <span className="intro-open-icon" aria-hidden="true"><ArrowIcon /></span>
+              </button>
             </>
           )}
 
@@ -1081,24 +1706,34 @@ export function App() {
             />
           ))}
 
-          {(filter === "all" || filter === "resume") && (
+          {(filter === "all" || filter === "about") && (
             <>
-              <DownloadCard
-                type="resume"
-                title="个人简历"
-                meta="3.1 MB"
-                href={assetUrl("/assets/wen-zhang-resume.pdf")}
-                fileName="张文_UIUX_简历.pdf"
-              />
-              <DownloadCard
-                type="portfolio"
-                title="作品集"
-                meta="15 MB"
-                href={assetUrl("/assets/wen-zhang-portfolio.pdf")}
-                fileName="张文_UIUX_作品集.pdf"
-                wide
-              />
-              <article className="card closing-card reveal-card">
+              <button className="card contact-card reveal-card" onClick={() => setContactOpen(true)} aria-label="打开联系方式" data-tooltip="联系我">
+                <span className="contact-symbol"><ContactIcon /></span>
+              </button>
+              <article className="card philosophy-card reveal-card">
+                <span className="card-kicker">设计方向</span>
+                <blockquote>在复杂业务里，建立清晰、可信的体验秩序。</blockquote>
+              </article>
+            </>
+          )}
+
+          {(filter === "all" || filter === "about" || filter === "resume") && (
+            <>
+              <article className="card about-downloads-card about-detail-card home-downloads-card reveal-card">
+                <span className="card-kicker">下载资料</span>
+                <div className="about-download-list">
+                  <a href={assetUrl("/assets/wen-zhang-resume.pdf")} download="张文_UIUX_简历.pdf">
+                    <span><small>PDF · 346 KB</small><strong>个人简历</strong></span>
+                    <DownloadIcon />
+                  </a>
+                  <a href={assetUrl("/assets/wen-zhang-portfolio.pdf")} download="张文_UIUX_作品集.pdf">
+                    <span><small>PDF · 17 MB</small><strong>作品集</strong></span>
+                    <DownloadIcon />
+                  </a>
+                </div>
+              </article>
+              <article className="card closing-card closing-with-downloads reveal-card">
                 <span className="card-kicker">持续探索</span>
                 <h2>工具会变化，设计判断仍然来自对真实问题的理解。</h2>
               </article>
@@ -1118,6 +1753,13 @@ export function App() {
           transitioning={transitioningId === activeProject.id}
           onClose={closeProject}
           onNavigate={navigateProject}
+        />
+      )}
+      {activeId === "about" && (
+        <AboutDetail
+          transitioning={transitioningId === "about"}
+          source={aboutSource}
+          onClose={closeProject}
         />
       )}
       {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />}
