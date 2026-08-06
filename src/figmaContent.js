@@ -5,7 +5,7 @@ export const figmaProjectContent = {
     summary: "参与 Temu 售后早期建设，覆盖核心售后场景，并承担多人协作下的 UI 审核、规范维护与开发还原。",
     role: "C 端售后 UI 负责人",
     outcome: "负责 C 端售后核心页面设计与体验质量把控，覆盖 Support Center、退款、退货、物流、赔付与异常处理。",
-    stats: [["95%", "UI 设计交付一致性"], ["20%", "团队效率提升"], ["50%", "体验问题减少"]],
+    stats: [["95%", "UI设计交付一致性提升至约"], ["20%", "团队效率提升约"], ["50%", "体验问题减少约"]],
     sections: [
       {
         eyebrow: "Business Objectives / 宏观视角与业务理解",
