@@ -1066,10 +1066,12 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
   const lightboxPointersRef = useRef(new Map());
   const lightboxPinchRef = useRef(null);
   const lightboxViewRef = useRef({ scale: 1, x: 0, y: 0 });
+  const lightboxRenderRef = useRef(null);
   const lastImageTriggerRef = useRef(null);
   const [showBackTop, setShowBackTop] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(null);
   const [lightboxView, setLightboxView] = useState({ scale: 1, x: 0, y: 0 });
+  const [lightboxRender, setLightboxRender] = useState(null);
   const [isDraggingLightbox, setIsDraggingLightbox] = useState(false);
   const galleryItems = useMemo(() => project.sections.flatMap((section, sectionIndex) => (
     getSectionImages(section).map((image, imageIndex) => ({ ...section, image, sectionIndex, imageIndex }))
@@ -1108,6 +1110,8 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
     lightboxDragRef.current = null;
     lightboxPointersRef.current.clear();
     lightboxPinchRef.current = null;
+    lightboxRenderRef.current = null;
+    setLightboxRender(null);
 
     if (activeImageIndex !== null && !lightbox.open) {
       lightbox.showModal();
@@ -1137,12 +1141,39 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
   function clampLightboxPan(x, y, scale) {
     const image = lightboxImageRef.current;
     if (!image || scale <= 1) return { x: 0, y: 0 };
-    const maxX = image.clientWidth * (scale - 1) / 2;
-    const maxY = image.clientHeight * (scale - 1) / 2;
+    const baseWidth = lightboxRenderRef.current?.baseWidth || image.clientWidth;
+    const baseHeight = lightboxRenderRef.current?.baseHeight || image.clientHeight;
+    const maxX = baseWidth * (scale - 1) / 2;
+    const maxY = baseHeight * (scale - 1) / 2;
     return {
       x: Math.min(Math.max(x, -maxX), maxX),
       y: Math.min(Math.max(y, -maxY), maxY),
     };
+  }
+
+  function prepareLightboxImage(event) {
+    const image = event.currentTarget;
+    if (window.innerWidth > 640 || !image.naturalWidth || !image.naturalHeight) {
+      lightboxRenderRef.current = null;
+      setLightboxRender(null);
+      return;
+    }
+
+    const pixelRatio = Math.max(1, window.devicePixelRatio || 1);
+    const renderWidth = image.naturalWidth / pixelRatio;
+    const renderHeight = image.naturalHeight / pixelRatio;
+    const availableWidth = Math.max(1, window.innerWidth - 24);
+    const availableHeight = Math.max(1, window.innerHeight - 160);
+    const fitScale = Math.min(1, availableWidth / renderWidth, availableHeight / renderHeight);
+    const render = {
+      width: renderWidth,
+      height: renderHeight,
+      fitScale,
+      baseWidth: renderWidth * fitScale,
+      baseHeight: renderHeight * fitScale,
+    };
+    lightboxRenderRef.current = render;
+    setLightboxRender(render);
   }
 
   function handleLightboxWheel(event) {
@@ -1417,6 +1448,7 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
               src={assetUrl(activeSection.image)}
               alt={`${project.title}：${activeSection.eyebrow}`}
               draggable={false}
+              onLoad={prepareLightboxImage}
               onWheel={handleLightboxWheel}
               onPointerDown={startLightboxDrag}
               onPointerMove={moveLightboxDrag}
@@ -1427,7 +1459,18 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
                 lightboxViewRef.current = resetView;
                 setLightboxView(resetView);
               }}
-              style={{ transform: `translate3d(${lightboxView.x}px, ${lightboxView.y}px, 0) scale(${lightboxView.scale})` }}
+              style={{
+                width: lightboxRender ? `${lightboxRender.width}px` : undefined,
+                height: lightboxRender ? `${lightboxRender.height}px` : undefined,
+                maxWidth: lightboxRender ? "none" : undefined,
+                maxHeight: lightboxRender ? "none" : undefined,
+                position: lightboxRender ? "fixed" : undefined,
+                left: lightboxRender ? "50vw" : undefined,
+                top: lightboxRender ? "50dvh" : undefined,
+                transform: lightboxRender
+                  ? `translate3d(calc(-50% + ${lightboxView.x}px), calc(-50% + ${lightboxView.y}px), 0) scale(${lightboxRender.fitScale * lightboxView.scale})`
+                  : `translate3d(${lightboxView.x}px, ${lightboxView.y}px, 0) scale(${lightboxView.scale})`,
+              }}
             />
             <button
               className="image-lightbox-nav is-previous"

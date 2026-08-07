@@ -528,6 +528,7 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
 .image-lightbox-nav { width: 56px; height: 56px; border-color: rgba(255,255,255,.24); background: rgba(48,48,47,.92); box-shadow: 0 8px 24px rgba(0,0,0,.22); }
 .image-lightbox-close { top: max(20px, env(safe-area-inset-top)); right: max(20px, env(safe-area-inset-right)); }
 .image-lightbox-close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.image-lightbox-close:focus-visible { outline: 2px solid rgba(247,245,241,.72); outline-offset: 3px; }
 .image-lightbox-nav { top: 50%; transform: translateY(-50%); }
 .image-lightbox-nav.is-previous { left: max(20px, env(safe-area-inset-left)); }
 .image-lightbox-nav.is-next { right: max(20px, env(safe-area-inset-right)); }
@@ -577,7 +578,8 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
 .about-detail-card h2 { margin: 0; font-size: 30px; line-height: 1.18; letter-spacing: -.035em; font-weight: 500; }
 .about-detail-card p { margin: 12px 0 0; color: var(--text-soft); font-size: 15px; line-height: 1.7; }
 .about-detail-experience { grid-column: span 2; min-height: 300px; padding: 32px; }
-.about-experience-list { margin-top: 18px; }
+.about-detail-experience .section-heading { margin-bottom: 0; }
+.about-experience-list { margin-top: 24px; }
 .about-experience-row { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 24px; padding: 18px 0; border-top: 1px solid var(--line); }
 .about-experience-meta { display: grid; align-content: start; gap: 7px; }
 .about-experience-row strong { font-weight: 500; }
@@ -609,7 +611,9 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
 .about-contact-details button svg { width: 15px; height: 15px; flex: 0 0 15px; fill: none; stroke: currentColor; stroke-width: 1.7; }
 .about-contact-details button span { display: none; }
 .about-downloads-card { grid-column: span 1; }
-.home-downloads-card { min-height: 230px; }
+.home-downloads-card { min-height: 230px; justify-content: flex-start; }
+.home-downloads-card > .card-kicker { margin-bottom: 0; }
+.home-downloads-card .about-download-list { margin-top: 24px; }
 .about-download-list { display: grid; gap: 8px; }
 .about-download-list a { min-height: 72px; padding: 13px 14px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-radius: 16px; color: var(--text); background: var(--soft-surface); text-decoration: none; transition: background-color .18s ease; }
 .about-download-list a:hover { color: var(--text); background: color-mix(in srgb, var(--soft-surface) 96%, #000 4%); }
@@ -618,6 +622,10 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
 .about-download-list a:hover small { color: var(--muted); opacity: 1; }
 .about-download-list strong { font-size: 15px; font-weight: 500; }
 .about-download-list svg { width: 18px; height: 18px; flex: 0 0 18px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+
+@media (hover: none) {
+  .image-lightbox-close:focus-visible { outline: none; }
+}
 
 @media (min-width: 641px) {
   .about-summary-card.experience-card { padding-bottom: 8px; }
@@ -739,7 +747,7 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
   .image-lightbox-nav.is-previous { left: max(12px, env(safe-area-inset-left)); }
   .image-lightbox-nav.is-next { right: max(12px, env(safe-area-inset-right)); }
   .image-lightbox-nav:not(:disabled):active { transform: scale(.94); }
-  .image-lightbox-caption { width: calc(100vw - 152px); min-width: 0; bottom: max(32px, calc(env(safe-area-inset-bottom) + 14px)); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px; font-size: 12px; }
+  .image-lightbox-caption { width: calc(100vw - 152px); min-width: 0; height: 52px; bottom: max(18px, env(safe-area-inset-bottom)); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 6px; font-size: 12px; }
   .image-lightbox-caption strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .detail-footer { min-height: 0; margin-top: 84px; grid-template-columns: 1fr; gap: 12px; }
   .detail-close-snapshot { top: 82px; width: calc(100vw - 48px); }
