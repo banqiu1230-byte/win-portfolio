@@ -686,7 +686,7 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
   .experience-row { grid-template-columns: 1fr auto; gap: 6px 12px; padding: 12px 0; }
   .experience-row span { grid-column: 1 / -1; }
   .experience-row time { grid-column: 2; grid-row: 1; }
-  .closing-card { min-height: 280px; }
+  .philosophy-card, .closing-card { min-height: 280px; }
   .download-card, .download-card.download-wide { display: flex; flex-direction: column; min-height: 0; }
   .download-visual, .download-card:not(.download-wide) .download-visual { min-height: 190px; }
   .download-copy { padding: 25px; }
