@@ -626,6 +626,10 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
   .about-detail-experience .about-experience-row { padding-block: 20px; }
 }
 
+@media (min-width: 901px) and (max-width: 1050px) {
+  .bento-grid { grid-template-columns: 280px repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 900px) {
   .site-header { grid-template-columns: 1fr auto 1fr; padding: 0 22px; }
   .filter-nav { justify-self: center; }
@@ -643,6 +647,9 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
   .about-detail-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .about-profile-card, .about-detail-experience, .about-workflow-card { grid-column: span 2; }
   .about-education-card, .about-detail-skills, .about-performance-card, .about-tools-card, .about-detail-contact-card, .about-downloads-card { grid-column: span 1; }
+  .about-detail-bento .about-detail-contact-card, .about-detail-bento .about-downloads-card { justify-content: flex-start; }
+  .about-detail-bento .about-contact-details, .about-detail-bento .about-download-list { margin-top: 24px; }
+  .about-detail-bento .about-downloads-card > .card-kicker { margin-bottom: 0; }
 }
 
 @media (max-width: 858px) {
