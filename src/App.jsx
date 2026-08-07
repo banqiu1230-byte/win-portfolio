@@ -753,8 +753,9 @@ function DownloadLink({ href, fileName, className = "", children, ariaLabel }) {
     statusTimerRef.current = window.setTimeout(() => setStatus("idle"), 2600);
   }
 
+  const resourceLabel = fileName.includes("作品集") ? "作品集" : "简历";
   const feedback = status === "loading"
-    ? "简历/作品集资源正在加载中，请稍后再试"
+    ? `${resourceLabel}正在准备，完成后将自动下载`
     : status === "success"
       ? "下载已开始"
       : status === "error"
