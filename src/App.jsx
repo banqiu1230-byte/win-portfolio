@@ -705,74 +705,14 @@ function DecodedImage({ src, alt = "", className = "", wrapperClassName = "", lo
 }
 
 function DownloadLink({ href, fileName, className = "", children, ariaLabel }) {
-  const [status, setStatus] = useState("idle");
-  const [feedbackVisible, setFeedbackVisible] = useState(false);
-  const feedbackTimerRef = useRef(null);
-  const statusTimerRef = useRef(null);
-
-  useEffect(() => () => {
-    window.clearTimeout(feedbackTimerRef.current);
-    window.clearTimeout(statusTimerRef.current);
-  }, []);
-
-  function showFeedbackFor(duration = 3000) {
-    window.clearTimeout(feedbackTimerRef.current);
-    setFeedbackVisible(true);
-    feedbackTimerRef.current = window.setTimeout(() => setFeedbackVisible(false), duration);
-  }
-
-  async function handleDownload(event) {
-    event.preventDefault();
-    if (status === "loading") {
-      showFeedbackFor();
-      return;
-    }
-    setStatus("loading");
-    showFeedbackFor();
-
-    try {
-      const response = await fetch(assetUrl(href));
-      if (!response.ok) throw new Error(`Download failed: ${response.status}`);
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = objectUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-      setStatus("success");
-      showFeedbackFor(2600);
-    } catch {
-      setStatus("error");
-      showFeedbackFor(2600);
-    }
-
-    window.clearTimeout(statusTimerRef.current);
-    statusTimerRef.current = window.setTimeout(() => setStatus("idle"), 2600);
-  }
-
-  const resourceLabel = fileName.includes("作品集") ? "作品集" : "简历";
-  const feedback = status === "loading"
-    ? `${resourceLabel}正在准备，完成后将自动下载`
-    : status === "success"
-      ? "下载已开始"
-      : status === "error"
-        ? "文件加载失败，请稍后重试"
-        : "";
-
   return (
     <a
       className={className}
       href={assetUrl(href)}
       download={fileName}
-      onClick={handleDownload}
       aria-label={ariaLabel}
-      aria-busy={status === "loading"}
     >
       {children}
-      {feedback && feedbackVisible ? <span className={`download-feedback is-${status}`} role="status">{feedback}</span> : null}
     </a>
   );
 }
@@ -1123,6 +1063,9 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
   const lightboxCloseRef = useRef(null);
   const lightboxImageRef = useRef(null);
   const lightboxDragRef = useRef(null);
+  const lightboxPointersRef = useRef(new Map());
+  const lightboxPinchRef = useRef(null);
+  const lightboxViewRef = useRef({ scale: 1, x: 0, y: 0 });
   const lastImageTriggerRef = useRef(null);
   const [showBackTop, setShowBackTop] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(null);
@@ -1160,8 +1103,11 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
     if (!lightbox) return;
 
     setLightboxView({ scale: 1, x: 0, y: 0 });
+    lightboxViewRef.current = { scale: 1, x: 0, y: 0 };
     setIsDraggingLightbox(false);
     lightboxDragRef.current = null;
+    lightboxPointersRef.current.clear();
+    lightboxPinchRef.current = null;
 
     if (activeImageIndex !== null && !lightbox.open) {
       lightbox.showModal();
@@ -1208,7 +1154,11 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
     setLightboxView((current) => {
       const nextScale = Math.min(4, Math.max(1, current.scale * Math.exp(-event.deltaY * 0.0015)));
       if (Math.abs(nextScale - current.scale) < 0.001) return current;
-      if (nextScale === 1) return { scale: 1, x: 0, y: 0 };
+      if (nextScale === 1) {
+        const resetView = { scale: 1, x: 0, y: 0 };
+        lightboxViewRef.current = resetView;
+        return resetView;
+      }
 
       const baseCenterX = rect.left + rect.width / 2 - current.x;
       const baseCenterY = rect.top + rect.height / 2 - current.y;
@@ -1220,42 +1170,114 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
         nextScale,
       );
 
-      return { scale: nextScale, ...pan };
+      const nextView = { scale: nextScale, ...pan };
+      lightboxViewRef.current = nextView;
+      return nextView;
     });
   }
 
   function startLightboxDrag(event) {
-    if (lightboxView.scale <= 1) return;
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
+    lightboxPointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (lightboxPointersRef.current.size >= 2) {
+      const image = lightboxImageRef.current;
+      const [first, second] = [...lightboxPointersRef.current.values()];
+      const view = lightboxViewRef.current;
+      if (!image || !first || !second) return;
+
+      const midpoint = {
+        x: (first.x + second.x) / 2,
+        y: (first.y + second.y) / 2,
+      };
+      const rect = image.getBoundingClientRect();
+      const baseCenterX = rect.left + rect.width / 2 - view.x;
+      const baseCenterY = rect.top + rect.height / 2 - view.y;
+      lightboxPinchRef.current = {
+        distance: Math.hypot(second.x - first.x, second.y - first.y) || 1,
+        scale: view.scale,
+        baseCenterX,
+        baseCenterY,
+        localX: (midpoint.x - baseCenterX - view.x) / view.scale,
+        localY: (midpoint.y - baseCenterY - view.y) / view.scale,
+      };
+      lightboxDragRef.current = null;
+      setIsDraggingLightbox(false);
+      return;
+    }
+
+    const view = lightboxViewRef.current;
+    if (view.scale <= 1) return;
     lightboxDragRef.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
-      originX: lightboxView.x,
-      originY: lightboxView.y,
+      originX: view.x,
+      originY: view.y,
     };
     setIsDraggingLightbox(true);
   }
 
   function moveLightboxDrag(event) {
+    if (!lightboxPointersRef.current.has(event.pointerId)) return;
+    lightboxPointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    const pinch = lightboxPinchRef.current;
+    if (pinch && lightboxPointersRef.current.size >= 2) {
+      event.preventDefault();
+      const [first, second] = [...lightboxPointersRef.current.values()];
+      const midpoint = {
+        x: (first.x + second.x) / 2,
+        y: (first.y + second.y) / 2,
+      };
+      const distance = Math.hypot(second.x - first.x, second.y - first.y);
+      const nextScale = Math.min(4, Math.max(1, pinch.scale * distance / pinch.distance));
+      const pan = nextScale === 1 ? { x: 0, y: 0 } : clampLightboxPan(
+        midpoint.x - pinch.baseCenterX - nextScale * pinch.localX,
+        midpoint.y - pinch.baseCenterY - nextScale * pinch.localY,
+        nextScale,
+      );
+      const nextView = { scale: nextScale, ...pan };
+      lightboxViewRef.current = nextView;
+      setLightboxView(nextView);
+      return;
+    }
+
     const drag = lightboxDragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
     event.preventDefault();
     const pan = clampLightboxPan(
       drag.originX + event.clientX - drag.startX,
       drag.originY + event.clientY - drag.startY,
-      lightboxView.scale,
+      lightboxViewRef.current.scale,
     );
-    setLightboxView((current) => ({ ...current, ...pan }));
+    const nextView = { ...lightboxViewRef.current, ...pan };
+    lightboxViewRef.current = nextView;
+    setLightboxView(nextView);
   }
 
   function endLightboxDrag(event) {
-    const drag = lightboxDragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
+    lightboxPointersRef.current.delete(event.pointerId);
+    lightboxPinchRef.current = null;
+
+    const remainingPointer = [...lightboxPointersRef.current.entries()][0];
+    if (remainingPointer && lightboxViewRef.current.scale > 1) {
+      const [pointerId, point] = remainingPointer;
+      lightboxDragRef.current = {
+        pointerId,
+        startX: point.x,
+        startY: point.y,
+        originX: lightboxViewRef.current.x,
+        originY: lightboxViewRef.current.y,
+      };
+      setIsDraggingLightbox(true);
+      return;
+    }
+
     lightboxDragRef.current = null;
     setIsDraggingLightbox(false);
   }
@@ -1400,7 +1422,11 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
               onPointerMove={moveLightboxDrag}
               onPointerUp={endLightboxDrag}
               onPointerCancel={endLightboxDrag}
-              onDoubleClick={() => setLightboxView({ scale: 1, x: 0, y: 0 })}
+              onDoubleClick={() => {
+                const resetView = { scale: 1, x: 0, y: 0 };
+                lightboxViewRef.current = resetView;
+                setLightboxView(resetView);
+              }}
               style={{ transform: `translate3d(${lightboxView.x}px, ${lightboxView.y}px, 0) scale(${lightboxView.scale})` }}
             />
             <button
