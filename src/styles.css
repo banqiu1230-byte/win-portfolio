@@ -682,6 +682,7 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
   .project-period { right: 23px; top: 23px; margin: 0; }
   .philosophy-card, .experience-card, .skill-card, .closing-card { padding: 25px; }
   .about-summary-card.skill-card > .card-kicker { left: 25px; top: 25px; }
+  .about-summary-card.skill-card .skill-cloud { margin-top: 46px; }
   .experience-row { grid-template-columns: 1fr auto; gap: 6px 12px; padding: 12px 0; }
   .experience-row span { grid-column: 1 / -1; }
   .experience-row time { grid-column: 2; grid-row: 1; }
