@@ -650,6 +650,7 @@ html[data-theme="dark"] .project-media { background: var(--image-surface); }
   .project-wide, .project-standard, .intro-card, .philosophy-card, .experience-card, .closing-card, .download-card.download-wide { grid-column: span 1; }
   .home-downloads-card { grid-column: span 1; }
   .closing-card.closing-with-downloads { grid-column: span 1; }
+  .about-summary-card.skill-card { min-height: 180px; }
   .about-detail-bento .about-profile-card { grid-column: span 2; }
 }
 
