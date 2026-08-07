@@ -1558,7 +1558,7 @@ function AboutDetail({ transitioning, source, onClose }) {
             <span className="card-kicker">下载资料</span>
             <div className="about-download-list">
               <DownloadLink href="/assets/wen-zhang-resume.pdf" fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
-                <span><small>PDF · 347 KB</small><strong>个人简历</strong></span>
+                <span><small>PDF · 348 KB</small><strong>个人简历</strong></span>
                 <DownloadIcon />
               </DownloadLink>
               <DownloadLink href="/assets/wen-zhang-portfolio.pdf" fileName="张文_UIUX_作品集.pdf" ariaLabel="下载作品集">
@@ -1879,7 +1879,7 @@ export function App() {
                 <span className="card-kicker">下载资料</span>
                 <div className="about-download-list">
                   <DownloadLink href="/assets/wen-zhang-resume.pdf" fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
-                    <span><small>PDF · 347 KB</small><strong>个人简历</strong></span>
+                    <span><small>PDF · 348 KB</small><strong>个人简历</strong></span>
                     <DownloadIcon />
                   </DownloadLink>
                   <DownloadLink href="/assets/wen-zhang-portfolio.pdf" fileName="张文_UIUX_作品集.pdf" ariaLabel="下载作品集">
