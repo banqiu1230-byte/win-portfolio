@@ -1073,9 +1073,18 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
   const [lightboxView, setLightboxView] = useState({ scale: 1, x: 0, y: 0 });
   const [lightboxRender, setLightboxRender] = useState(null);
   const [isDraggingLightbox, setIsDraggingLightbox] = useState(false);
-  const galleryItems = useMemo(() => project.sections.flatMap((section, sectionIndex) => (
-    getSectionImages(section).map((image, imageIndex) => ({ ...section, image, sectionIndex, imageIndex }))
-  )), [project.sections]);
+  const galleryItems = useMemo(() => [
+    ...(project.introImages || []).map((item, imageIndex) => ({
+      ...item,
+      eyebrow: item.label,
+      title: item.label,
+      sectionIndex: -1,
+      imageIndex,
+    })),
+    ...project.sections.flatMap((section, sectionIndex) => (
+      getSectionImages(section).map((image, imageIndex) => ({ ...section, image, sectionIndex, imageIndex }))
+    )),
+  ], [project.introImages, project.sections]);
   const activeSection = activeImageIndex === null ? null : galleryItems[activeImageIndex];
 
   useLayoutEffect(() => {
@@ -1365,6 +1374,31 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
           ) : null}
         </section>
         <div className="detail-sections">
+          {project.introImages?.length ? (
+            <section className="case-section detail-intro-gallery" aria-label="项目界面全景">
+              <div className="case-images">
+                {project.introImages.map((item, imageIndex) => (
+                  <figure key={item.image}>
+                    <button
+                      className="case-image-button"
+                      type="button"
+                      onClick={(event) => openLightbox(imageIndex, event.currentTarget)}
+                      aria-label={`放大查看：${item.label}`}
+                    >
+                      <DecodedImage
+                        wrapperClassName="case-image-loader"
+                        src={item.image}
+                        alt={item.label}
+                        loading="lazy"
+                        aspectRatio={getDetailImageAspectRatio(item.image)}
+                      />
+                      <span className="case-image-zoom" aria-hidden="true"><ZoomIcon /></span>
+                    </button>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          ) : null}
           {project.sections.map((section, index) => {
             const sectionImages = getSectionImages(section);
             return (

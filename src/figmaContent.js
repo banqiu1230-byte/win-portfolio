@@ -6,6 +6,10 @@ export const figmaProjectContent = {
     role: "C 端售后 UI 负责人",
     outcome: "负责 C 端售后核心页面设计与体验质量把控，覆盖 Support Center、退款、退货、物流、赔付与异常处理。",
     stats: [["95%", "UI设计交付一致性提升至约"], ["20%", "团队效率提升约"], ["50%", "体验问题减少约"]],
+    introImages: [
+      { image: "/assets/temu-overview-mobile.png", label: "Temu 售后移动端界面全景" },
+      { image: "/assets/temu-overview-desktop.png", label: "Temu 售后 PC 端界面全景" },
+    ],
     sections: [
       {
         eyebrow: "Business Objectives / 宏观视角与业务理解",
