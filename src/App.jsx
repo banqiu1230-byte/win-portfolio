@@ -1543,9 +1543,10 @@ function AboutDetail({ transitioning, source, onClose }) {
   const layerRef = useRef(null);
   const [showBackTop, setShowBackTop] = useState(false);
   const [copiedContact, setCopiedContact] = useState(null);
-  const performanceReviewLabel = new URLSearchParams(window.location.search).get("review") === "multiple"
-    ? "多次优评"
-    : "5 次优评";
+  const isAlternateVersion = new URLSearchParams(window.location.search).get("review") === "multiple";
+  const performanceReviewLabel = isAlternateVersion ? "多次优评" : "5 次优评";
+  const resumeHref = isAlternateVersion ? "/assets/wen-zhang-resume-alternate.pdf" : "/assets/wen-zhang-resume.pdf";
+  const resumeMeta = isAlternateVersion ? "PDF · 320 KB" : "PDF · 348 KB";
 
   useLayoutEffect(() => {
     layerRef.current?.scrollTo({ top: 0, behavior: "instant" });
@@ -1666,8 +1667,8 @@ function AboutDetail({ transitioning, source, onClose }) {
           <article className="card about-downloads-card about-detail-card">
             <span className="card-kicker">下载资料</span>
             <div className="about-download-list">
-              <DownloadLink href="/assets/wen-zhang-resume.pdf" fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
-                <span><small>PDF · 348 KB</small><strong>个人简历</strong></span>
+              <DownloadLink href={resumeHref} fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
+                <span><small>{resumeMeta}</small><strong>个人简历</strong></span>
                 <DownloadIcon />
               </DownloadLink>
               <DownloadLink href="/assets/wen-zhang-portfolio.pdf" fileName="张文_UIUX_作品集.pdf" ariaLabel="下载作品集">
@@ -1684,6 +1685,9 @@ function AboutDetail({ transitioning, source, onClose }) {
 
 export function App() {
   const initialHash = window.location.hash.match(/^#project\/(.+)$/)?.[1];
+  const isAlternateVersion = new URLSearchParams(window.location.search).get("review") === "multiple";
+  const resumeHref = isAlternateVersion ? "/assets/wen-zhang-resume-alternate.pdf" : "/assets/wen-zhang-resume.pdf";
+  const resumeMeta = isAlternateVersion ? "PDF · 320 KB" : "PDF · 348 KB";
   const [filter, setFilter] = useState("all");
   const [activeId, setActiveId] = useState(detailIds.has(initialHash) ? initialHash : null);
   const [transitioningId, setTransitioningId] = useState(null);
@@ -1987,8 +1991,8 @@ export function App() {
               <article className="card about-downloads-card about-detail-card home-downloads-card reveal-card">
                 <span className="card-kicker">下载资料</span>
                 <div className="about-download-list">
-                  <DownloadLink href="/assets/wen-zhang-resume.pdf" fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
-                    <span><small>PDF · 348 KB</small><strong>个人简历</strong></span>
+                  <DownloadLink href={resumeHref} fileName="张文_UIUX_简历.pdf" ariaLabel="下载个人简历">
+                    <span><small>{resumeMeta}</small><strong>个人简历</strong></span>
                     <DownloadIcon />
                   </DownloadLink>
                   <DownloadLink href="/assets/wen-zhang-portfolio.pdf" fileName="张文_UIUX_作品集.pdf" ariaLabel="下载作品集">
