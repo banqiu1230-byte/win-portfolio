@@ -1073,6 +1073,8 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
   const [lightboxView, setLightboxView] = useState({ scale: 1, x: 0, y: 0 });
   const [lightboxRender, setLightboxRender] = useState(null);
   const [isDraggingLightbox, setIsDraggingLightbox] = useState(false);
+  const isAlternateVersion = new URLSearchParams(window.location.search).get("review") === "multiple";
+  const projectRole = isAlternateVersion && project.id === "message" ? "UI / UX Design" : project.role;
   const galleryItems = useMemo(() => [
     ...(project.introImages || []).map((item, imageIndex) => ({
       ...item,
@@ -1364,7 +1366,7 @@ function Detail({ project, previousProject, nextProject, transitioning, onClose,
           <h1>{project.detailTitle || project.title}</h1>
           <p className="detail-lead">{project.summary}</p>
           <div className="detail-meta">
-            <div><span>我的角色</span><strong>{project.role}</strong></div>
+            <div><span>我的角色</span><strong>{projectRole}</strong></div>
             <div><span>项目结果</span><strong>{project.outcome}</strong></div>
           </div>
           {project.stats.length ? (
