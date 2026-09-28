@@ -1541,6 +1541,9 @@ function AboutDetail({ transitioning, source, onClose }) {
   const layerRef = useRef(null);
   const [showBackTop, setShowBackTop] = useState(false);
   const [copiedContact, setCopiedContact] = useState(null);
+  const performanceReviewLabel = new URLSearchParams(window.location.search).get("review") === "multiple"
+    ? "多次优评"
+    : "5 次优评";
 
   useLayoutEffect(() => {
     layerRef.current?.scrollTo({ top: 0, behavior: "instant" });
@@ -1624,7 +1627,7 @@ function AboutDetail({ transitioning, source, onClose }) {
 
           <article className="card about-performance-card about-detail-card">
             <span className="card-kicker">绩效记录</span>
-            <div><strong>5 次优评</strong><p>参与 9 次绩效评审</p></div>
+            <div><strong>{performanceReviewLabel}</strong><p>参与 9 次绩效评审</p></div>
           </article>
 
           <article className="card about-tools-card about-detail-card">
